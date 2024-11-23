@@ -9,7 +9,7 @@ public static class Solver
 
     private sealed record ElapsedTime(double Constructor, double Part1, double Part2);
 
-   
+
     public static async Task SolveLast()
     {
         var lastProblem = LoadAllProblems().LastOrDefault();
@@ -24,12 +24,12 @@ public static class Solver
             {
                 await SolveProblem(problem, CalculateElapsedMilliseconds(sw));
             }
-            
+
         }
-            
+
     }
 
-    
+
     public static async Task Solve<TProblem>()
         where TProblem : BaseProblem, new()
     {
@@ -46,78 +46,8 @@ public static class Solver
         {
             Console.WriteLine(e.Message);
         }
-       
-
     }
 
-    public static async Task Solve(params uint[] problemNumbers)
-        => await Solve(problemNumbers.AsEnumerable());
-
-
-    public static async Task Solve(params Type[] problems)
-        => await Solve(problems.AsEnumerable());
-
-
-    public static async Task Solve(IEnumerable<Type> problems)
-    {
-        var totalElapsedTime = new List<ElapsedTime>();
-        var sw = new Stopwatch();
-        foreach (var problemType in LoadAllProblems().Where(problemType => problems.Contains(problemType)))
-        {
-            sw.Restart();
-            var potentialProblem = InstantiateProblem(problemType);
-            sw.Stop();
-            if (potentialProblem is BaseProblem problem)
-            {
-                totalElapsedTime.Add(await SolveProblem(problem,  CalculateElapsedMilliseconds(sw)));
-            }
-        }
-
-
-    }
-
-    
-    public static async Task Solve(IEnumerable<uint> problemNumbers)
-    {
-        var totalElapsedTime = new List<ElapsedTime>();
-       
-        var sw = new Stopwatch();
-        foreach (Type problemType in LoadAllProblems())
-        {
-            sw.Restart();
-            // Since we're trying to instantiate them all, we don't want to show unrelated errors or render unrelated problem rows
-            // However, without the index, calculated once the constructor success, we can't separate those unrelated errors from
-            // our desired problems' ones. So there's a limitation when using this method if other constructors are failing
-            var potentialProblem = Activator.CreateInstance(problemType);
-            sw.Stop();
-
-            if (potentialProblem is BaseProblem problem && problemNumbers.Contains(problem.CalculateIndex()))
-            {
-                totalElapsedTime.Add(await SolveProblem(problem, CalculateElapsedMilliseconds(sw)));
-            }
-        }
-    }
-
-
-    public static async Task SolveAll()
-    {
-        var totalElapsedTime = new List<ElapsedTime>();
-      
-        var sw = new Stopwatch();
-        foreach (Type problemType in LoadAllProblems())
-        {
-            sw.Restart();
-            var potentialProblem = InstantiateProblem(problemType);
-            sw.Stop();
-
-            if (potentialProblem is BaseProblem problem)
-            {
-                totalElapsedTime.Add(await SolveProblem(problem, CalculateElapsedMilliseconds(sw)));
-            }
-            
-        }
-
-    }
 
     internal static IEnumerable<Type> LoadAllProblems()
     {
@@ -147,18 +77,16 @@ public static class Solver
             ? $"Day {problemIndex}"
             : $"{problem.GetType().Name}";
 
-       
-       
-        //RenderRow(table, problemTitle, $"{problem.GetType().Name}()", "-----------", constructorElapsedTime, configuration);
-       
+
+        Console.WriteLine($"Day {problemIndex}, {problemTitle}, {FormatTime(constructorElapsedTime)}");
 
         (string solution1, double elapsedMillisecondsPart1) = await SolvePart(isPart1: true, problem);
-        //RenderRow(table, problemTitle, "Part 1", solution1, elapsedMillisecondsPart1, configuration);
+        Console.WriteLine($"Part 1: {solution1} ({elapsedMillisecondsPart1} ms)");
 
         (string solution2, double elapsedMillisecondsPart2) = await SolvePart(isPart1: false, problem);
-        //RenderRow(table, problemTitle, "Part 2", solution2, elapsedMillisecondsPart2, configuration);
+        Console.WriteLine($"Part 2: {solution2} ({elapsedMillisecondsPart2} ms)");
 
-    
+
         return new ElapsedTime(constructorElapsedTime, elapsedMillisecondsPart1, elapsedMillisecondsPart2);
     }
 
@@ -202,14 +130,14 @@ public static class Solver
     private static string FormatTime(double elapsedMilliseconds)
     {
         var message = elapsedMilliseconds switch
-            {
-                < 1 => $"{elapsedMilliseconds:F} ms",
-                < 1_000 => $"{Math.Round(elapsedMilliseconds)} ms",
-                < 60_000 => $"{0.001 * elapsedMilliseconds:F} s",
-                _ => $"{Math.Floor(elapsedMilliseconds / 60_000)} min {Math.Round(0.001 * (elapsedMilliseconds % 60_000))} s",
-            };
+        {
+            < 1 => $"{elapsedMilliseconds:F} ms",
+            < 1_000 => $"{Math.Round(elapsedMilliseconds)} ms",
+            < 60_000 => $"{0.001 * elapsedMilliseconds:F} s",
+            _ => $"{Math.Floor(elapsedMilliseconds / 60_000)} min {Math.Round(0.001 * (elapsedMilliseconds % 60_000))} s",
+        };
 
-            return message;
+        return message;
     }
 
 }
