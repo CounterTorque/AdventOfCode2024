@@ -1,3 +1,3 @@
 ﻿using AdventOfCode2024;
 
-await Solver.SolveLast();
+await Solver.Solve<Day01>();
