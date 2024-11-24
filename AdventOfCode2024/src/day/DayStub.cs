@@ -23,7 +23,7 @@ public class DayStub : BaseDay
         string[] lines = await File.ReadAllLinesAsync(inputFilePath);
         Debug.Assert(lines.Length != 0);
         
-        return new($"Solution 2.1 {part1}");
+        return new($"Solution 1 {part1}");
     }
 
 
@@ -39,6 +39,6 @@ public class DayStub : BaseDay
         string[] lines = await File.ReadAllLinesAsync(inputFilePath);
         Debug.Assert(lines.Length != 0);
         
-        return new($"Solution 2.2 {part2}");
+        return new($"Solution 2 {part2}");
     }
 }
