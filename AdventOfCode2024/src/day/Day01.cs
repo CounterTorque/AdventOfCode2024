@@ -1,5 +1,5 @@
 using System.Diagnostics;
-
+using System.Text.RegularExpressions;
 using AdventOfCode2024;
 
 
@@ -23,6 +23,24 @@ public class Day01 : BaseDay
         string[] lines = await File.ReadAllLinesAsync(inputFilePath);
         Debug.Assert(lines.Length != 0);
         
+        List<int> leftNumbers = new();
+        List<int> rightNumbers = new();
+        foreach(string line in lines)
+        {
+            string[] nums = Regex.Split(line, @"\s+");
+            leftNumbers.Add(int.Parse(nums[0]));
+            rightNumbers.Add(int.Parse(nums[1]));
+        }
+
+        leftNumbers.Sort();
+        rightNumbers.Sort();
+        Debug.Assert(leftNumbers.Count == rightNumbers.Count);
+
+        for(int i = 0; i < leftNumbers.Count; i++)
+        {
+            part1 += Math.Abs(rightNumbers[i] - leftNumbers[i]);
+        }
+
         return new($"Solution 1 {part1}");
     }
 
