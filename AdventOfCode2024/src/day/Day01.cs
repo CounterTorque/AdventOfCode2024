@@ -55,7 +55,23 @@ public class Day01 : BaseDay
         int part2 = 0;
         string[] lines = await File.ReadAllLinesAsync(inputFilePath);
         Debug.Assert(lines.Length != 0);
+
+        List<int> leftNumbers = new();
+        List<int> rightNumbers = new();
+        foreach(string line in lines)
+        {
+            string[] nums = Regex.Split(line, @"\s+");
+            leftNumbers.Add(int.Parse(nums[0]));
+            rightNumbers.Add(int.Parse(nums[1]));
+        }
         
+        for(int i = 0; i < leftNumbers.Count; i++)
+        {
+            int left = leftNumbers[i];
+            int occurs = rightNumbers.Count(x => x == left);
+            part2 += occurs * left;
+        }
+
         return new($"Solution 2 {part2}");
     }
 }
