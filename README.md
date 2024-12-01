@@ -8,7 +8,7 @@ I am using AOC24 to refresh on C#. It's been several years so please if you see 
 
 ## Organization
 Each solution is in a numeric folder named by `Day##`. The cs file will have two methods for part1 and part2.
-At the root, there is an inputs folder where each `input_XX_part#.txt`
+At the root, there is an inputs folder where each `Day##_part[1|2].txt`
 
 Each folder, complete or not, will contain the above items easing the startup time once the next puzzle is available. 
 

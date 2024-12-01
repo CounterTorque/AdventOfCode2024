@@ -23,8 +23,8 @@ public class Day01 : BaseDay
         string[] lines = await File.ReadAllLinesAsync(inputFilePath);
         Debug.Assert(lines.Length != 0);
         
-        List<int> leftNumbers = new();
-        List<int> rightNumbers = new();
+        List<int> leftNumbers = [];
+        List<int> rightNumbers = [];
         foreach(string line in lines)
         {
             string[] nums = Regex.Split(line, @"\s+");
@@ -36,10 +36,16 @@ public class Day01 : BaseDay
         rightNumbers.Sort();
         Debug.Assert(leftNumbers.Count == rightNumbers.Count);
 
-        for(int i = 0; i < leftNumbers.Count; i++)
-        {
-            part1 += Math.Abs(rightNumbers[i] - leftNumbers[i]);
-        }
+        part1 = leftNumbers.Zip(rightNumbers)
+            .Select(x => Math.Abs(x.Second - x.First))
+            .Sum();
+        
+        // part1 = leftNumbers.Select((l, i) => Math.Abs(rightNumbers[i] - l)).Sum();
+
+        // for(int i = 0; i < leftNumbers.Count; i++)
+        // {
+        //     part1 += Math.Abs(rightNumbers[i] - leftNumbers[i]);
+        // }
 
         return new($"Solution 1 {part1}");
     }
@@ -56,8 +62,8 @@ public class Day01 : BaseDay
         string[] lines = await File.ReadAllLinesAsync(inputFilePath);
         Debug.Assert(lines.Length != 0);
 
-        List<int> leftNumbers = new();
-        List<int> rightNumbers = new();
+        List<int> leftNumbers = [];
+        List<int> rightNumbers = [];
         foreach(string line in lines)
         {
             string[] nums = Regex.Split(line, @"\s+");
