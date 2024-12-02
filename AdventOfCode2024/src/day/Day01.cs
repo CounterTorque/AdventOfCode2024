@@ -5,22 +5,14 @@ using AdventOfCode2024;
 
 public class Day01 : BaseDay
 {
- 
-    public Day01()
+    public Day01(string[]? inputLines = null) : base(inputLines)
     {
-
     }
 
     public override async ValueTask<string> Solve_1()
     {
-        string inputFilePath = InputFilePath();
-        if (!File.Exists(inputFilePath))
-        {
-            throw new FileNotFoundException(inputFilePath);
-        }
-
         int part1 = 0;
-        string[] lines = await File.ReadAllLinesAsync(inputFilePath);
+        string[] lines = InputLines;
         Debug.Assert(lines.Length != 0);
         
         List<int> leftNumbers = [];
@@ -52,14 +44,8 @@ public class Day01 : BaseDay
 
     public override async ValueTask<string> Solve_2()
     {
-        string inputFilePath = InputFilePath();
-        if (!File.Exists(inputFilePath))
-        {
-            throw new FileNotFoundException(inputFilePath);
-        }
-
         int part2 = 0;
-        string[] lines = await File.ReadAllLinesAsync(inputFilePath);
+        string[] lines = InputLines;
         Debug.Assert(lines.Length != 0);
 
         List<int> leftNumbers = [];

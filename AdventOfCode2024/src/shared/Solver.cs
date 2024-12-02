@@ -20,7 +20,7 @@ namespace AdventOfCode2024
                 var potentialProblem = InstantiateProblem(lastProblem);
                 sw.Stop();
 
-                if (potentialProblem is BaseProblem problem)
+                if (potentialProblem is BaseDay problem)
                 {
                     await SolveProblem(problem, CalculateElapsedMilliseconds(sw));
                 }
@@ -29,18 +29,17 @@ namespace AdventOfCode2024
 
         }
 
-
-        public static async Task Solve<TProblem>()
-            where TProblem : BaseProblem, new()
+        public static async Task Solve<TBaseDay>(IBaseDayFactory<TBaseDay> factory, string[]? inputLines = null)
+            where TBaseDay : BaseDay
         {
             var sw = new Stopwatch();
             sw.Start();
             try
             {
-                TProblem problem = new();
+                TBaseDay baseDay = factory.CreateInstance(inputLines);
                 sw.Stop();
 
-                await SolveProblem(problem, CalculateElapsedMilliseconds(sw));
+                await SolveProblem(baseDay, CalculateElapsedMilliseconds(sw));
             }
             catch (Exception e)
             {
@@ -53,7 +52,7 @@ namespace AdventOfCode2024
         {
             List<Assembly> assemblies = [Assembly.GetEntryAssembly()!];
             return assemblies.SelectMany(a => a.GetTypes())
-                .Where(type => typeof(BaseProblem).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                .Where(type => typeof(BaseDay).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
                 .OrderBy(t => t.FullName);
         }
 
@@ -70,7 +69,7 @@ namespace AdventOfCode2024
             }
         }
 
-        private static async Task<ElapsedTime> SolveProblem(BaseProblem problem, double constructorElapsedTime)
+        private static async Task<ElapsedTime> SolveProblem(BaseDay problem, double constructorElapsedTime)
         {
             var problemIndex = problem.CalculateIndex();
             var problemTitle = problemIndex != default
@@ -90,7 +89,7 @@ namespace AdventOfCode2024
             return new ElapsedTime(constructorElapsedTime, elapsedMillisecondsPart1, elapsedMillisecondsPart2);
         }
 
-        private static async Task<(string solution, double elapsedTime)> SolvePart(bool isPart1, BaseProblem problem)
+        private static async Task<(string solution, double elapsedTime)> SolvePart(bool isPart1, BaseDay problem)
         {
             Stopwatch stopwatch = new();
             var solution = string.Empty;
