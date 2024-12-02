@@ -3,10 +3,10 @@ using System.Diagnostics;
 using AdventOfCode2024;
 
 
-public class DayStub : BaseDay
+public class Day03 : BaseDay
 {
  
-    public DayStub()
+    public Day03()
     {
 
     }

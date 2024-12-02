@@ -20,10 +20,9 @@ namespace AdventOfCode2024
                 : default;
         }
 
-        public virtual string InputFilePath(int part)
+        public virtual string InputFilePath()
         {
             string index = CalculateIndex().ToString("D2");
-            string partSuffix = $"_Part{part}";
             string assemblyPath = Assembly.GetExecutingAssembly().Location;
             var projectRoot = Path.GetDirectoryName(assemblyPath);
 
@@ -32,7 +31,7 @@ namespace AdventOfCode2024
                 throw new Exception("Unable to determine project root.");
             }
 
-            return Path.Combine(projectRoot, InputFileDirPath, $"Day{index}", $"Day{index}{partSuffix}.{InputFileExtension.TrimStart('.')}");
+            return Path.Combine(projectRoot, InputFileDirPath, $"Day{index}", $"Day{index}.{InputFileExtension.TrimStart('.')}");
         }
 
         public abstract ValueTask<string> Solve_1();

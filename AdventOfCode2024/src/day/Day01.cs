@@ -13,7 +13,7 @@ public class Day01 : BaseDay
 
     public override async ValueTask<string> Solve_1()
     {
-        string inputFilePath = InputFilePath(1);
+        string inputFilePath = InputFilePath();
         if (!File.Exists(inputFilePath))
         {
             throw new FileNotFoundException(inputFilePath);
@@ -52,7 +52,7 @@ public class Day01 : BaseDay
 
     public override async ValueTask<string> Solve_2()
     {
-        string inputFilePath = InputFilePath(2);
+        string inputFilePath = InputFilePath();
         if (!File.Exists(inputFilePath))
         {
             throw new FileNotFoundException(inputFilePath);
