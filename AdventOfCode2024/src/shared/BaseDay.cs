@@ -5,8 +5,11 @@ namespace AdventOfCode2024
     {
         protected BaseDay(string[]? inputLines = null)
         {
-            InputLines = inputLines;
-            if (InputLines == null)
+            if (inputLines != null)
+            {
+                InputLines = inputLines;
+            }
+            else
             {
                 string inputFilePath = InputFilePath();
                 if (!File.Exists(inputFilePath))

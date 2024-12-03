@@ -43,47 +43,37 @@ namespace AdventOfCode2024
                 : $"{problem.GetType().Name}";
 
 
-            Console.WriteLine($"Day {problemIndex}, {problemTitle}, {FormatTime(constructorElapsedTime)}");
-
             double elapsedMillisecondsPart1 = 0;
             double elapsedMillisecondsPart2 = 0;
 
             if (parts.HasFlag(Parts.Part1))
             {
-                (string solution1, elapsedMillisecondsPart1) = await SolvePart(isPart1: true, problem);
+                (int solution1, elapsedMillisecondsPart1) = await SolvePart(isPart1: true, problem);
                 Console.WriteLine($"Part 1: {solution1} ({elapsedMillisecondsPart1} ms)");
             }
 
             if (parts.HasFlag(Parts.Part2))
             {
-                (string solution2, elapsedMillisecondsPart2) = await SolvePart(isPart1: false, problem);
+                (int solution2, elapsedMillisecondsPart2) = await SolvePart(isPart1: false, problem);
                 Console.WriteLine($"Part 2: {solution2} ({elapsedMillisecondsPart2} ms)");
             }
 
             return new ElapsedTime(constructorElapsedTime, elapsedMillisecondsPart1, elapsedMillisecondsPart2);
         }
 
-        private static async Task<(string solution, double elapsedTime)> SolvePart(bool isPart1, BaseDay problem)
+        private static async Task<(int solution, double elapsedTime)> SolvePart(bool isPart1, BaseDay problem)
         {
             Stopwatch stopwatch = new();
-            var solution = string.Empty;
+            int solution = 0;
 
             try
             {
-                Func<ValueTask<string>> solve = isPart1
+                Func<ValueTask<int>> solve = isPart1
                     ? problem.Solve_1
                     : problem.Solve_2;
 
                 stopwatch.Start();
                 solution = await solve();
-            }
-            catch (NotImplementedException)
-            {
-                solution = "[[Not implemented]]";
-            }
-            catch (Exception e)
-            {
-                solution = e.Message + Environment.NewLine + e.StackTrace;
             }
             finally
             {

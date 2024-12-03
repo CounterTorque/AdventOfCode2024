@@ -34,8 +34,8 @@ namespace AdventOfCode2024
             return Path.Combine(projectRoot, InputFileDirPath, $"Day{index}", $"Day{index}.{InputFileExtension.TrimStart('.')}");
         }
 
-        public abstract ValueTask<string> Solve_1();
+        public abstract ValueTask<int> Solve_1();
 
-        public abstract ValueTask<string> Solve_2();
+        public abstract ValueTask<int> Solve_2();
     }
 }
