@@ -19,12 +19,11 @@ public class Day03 : BaseDay
         foreach (string line in lines)
         {
             MatchCollection matches = Regex.Matches(line, pattern);
-            string[] results = new string[matches.Count];
 
             for (int i = 0; i < matches.Count; i++)
             {
-                results[i] = matches[i].Value;
-                string[] nums = Regex.Matches(results[i], @"[0-9]+").Select(x => x.Value).ToArray();
+                string currentMul = matches[i].Value;
+                string[] nums = Regex.Matches(currentMul, @"[0-9]+").Select(x => x.Value).ToArray();
                 Debug.Assert(nums.Length == 2);
                 part1 += int.Parse(nums[0]) * int.Parse(nums[1]);
             }
@@ -39,7 +38,38 @@ public class Day03 : BaseDay
         int part2 = 0;
         string[] lines = InputLines;
         Debug.Assert(lines.Length != 0);
+        string mulPattern = "mul\\([0-9]+,[0-9]+\\)";
+        string doPattern = "do\\(\\)";
+        string dontPattern = "don't\\(\\)";
 
+        string totalLine = string.Concat(lines);
+
+        MatchCollection mulMatches = Regex.Matches(totalLine, mulPattern);
+        MatchCollection doMatches = Regex.Matches(totalLine, doPattern);
+        MatchCollection dontMatches = Regex.Matches(totalLine, dontPattern);
+
+        foreach (Match mulMatch in mulMatches)
+        {
+            int closestDo = doMatches
+                            .Where(x => x.Index < mulMatch.Index)
+                            .Select(x => x.Index)
+                            .DefaultIfEmpty(0)
+                            .Max();
+
+            int closestDont = dontMatches
+                            .Where(x => x.Index < mulMatch.Index)
+                            .Select(x => x.Index)
+                            .DefaultIfEmpty(int.MinValue)
+                            .Max();
+
+            if (closestDo > closestDont)
+            {
+                string currentMul = mulMatch.Value;
+                string[] nums = Regex.Matches(currentMul, @"[0-9]+").Select(x => x.Value).ToArray();
+                Debug.Assert(nums.Length == 2);
+                part2 += int.Parse(nums[0]) * int.Parse(nums[1]);
+            }
+        }
        
         return new($"Solution 2 {part2}");
     }    
