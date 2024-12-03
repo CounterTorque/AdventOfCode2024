@@ -5,41 +5,28 @@ namespace AdventOfCode2024
 {
     public static class Solver
     {
-        private static readonly bool IsInteractiveEnvironment = Environment.UserInteractive && !Console.IsOutputRedirected;
+        [Flags]
+        public enum Parts
+        {
+            None = 0,
+            Part1 = 1,
+            Part2 = 2,
+            BOTH = Part1 | Part2
+        }
 
         private sealed record ElapsedTime(double Constructor, double Part1, double Part2);
 
-
-        public static async Task SolveLast()
-        {
-            var lastProblem = LoadAllProblems().LastOrDefault();
-            if (lastProblem is not null)
-            {
-                var sw = new Stopwatch();
-                sw.Start();
-                var potentialProblem = InstantiateProblem(lastProblem);
-                sw.Stop();
-
-                if (potentialProblem is BaseDay problem)
-                {
-                    await SolveProblem(problem, CalculateElapsedMilliseconds(sw));
-                }
-
-            }
-
-        }
-
-        public static async Task Solve<TBaseDay>(IBaseDayFactory<TBaseDay> factory, string[]? inputLines = null)
+        public static async Task Solve<TBaseDay>(IBaseDayFactory<TBaseDay> factory, Parts parts = Parts.BOTH)
             where TBaseDay : BaseDay
         {
             var sw = new Stopwatch();
             sw.Start();
             try
             {
-                TBaseDay baseDay = factory.CreateInstance(inputLines);
+                TBaseDay baseDay = factory.CreateInstance();
                 sw.Stop();
 
-                await SolveProblem(baseDay, CalculateElapsedMilliseconds(sw));
+                await SolveProblem(baseDay, parts, CalculateElapsedMilliseconds(sw));
             }
             catch (Exception e)
             {
@@ -48,28 +35,7 @@ namespace AdventOfCode2024
         }
 
 
-        internal static IEnumerable<Type> LoadAllProblems()
-        {
-            List<Assembly> assemblies = [Assembly.GetEntryAssembly()!];
-            return assemblies.SelectMany(a => a.GetTypes())
-                .Where(type => typeof(BaseDay).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
-                .OrderBy(t => t.FullName);
-        }
-
-
-        private static object? InstantiateProblem(Type problemType)
-        {
-            try
-            {
-                return Activator.CreateInstance(problemType);
-            }
-            catch (Exception e)
-            {
-                return e.InnerException?.Message + Environment.NewLine + e.InnerException?.StackTrace;
-            }
-        }
-
-        private static async Task<ElapsedTime> SolveProblem(BaseDay problem, double constructorElapsedTime)
+        private static async Task<ElapsedTime> SolveProblem(BaseDay problem, Parts parts, double constructorElapsedTime)
         {
             var problemIndex = problem.CalculateIndex();
             var problemTitle = problemIndex != default
@@ -79,12 +45,20 @@ namespace AdventOfCode2024
 
             Console.WriteLine($"Day {problemIndex}, {problemTitle}, {FormatTime(constructorElapsedTime)}");
 
-            (string solution1, double elapsedMillisecondsPart1) = await SolvePart(isPart1: true, problem);
-            Console.WriteLine($"Part 1: {solution1} ({elapsedMillisecondsPart1} ms)");
+            double elapsedMillisecondsPart1 = 0;
+            double elapsedMillisecondsPart2 = 0;
 
-            (string solution2, double elapsedMillisecondsPart2) = await SolvePart(isPart1: false, problem);
-            Console.WriteLine($"Part 2: {solution2} ({elapsedMillisecondsPart2} ms)");
+            if (parts.HasFlag(Parts.Part1))
+            {
+                (string solution1, elapsedMillisecondsPart1) = await SolvePart(isPart1: true, problem);
+                Console.WriteLine($"Part 1: {solution1} ({elapsedMillisecondsPart1} ms)");
+            }
 
+            if (parts.HasFlag(Parts.Part2))
+            {
+                (string solution2, elapsedMillisecondsPart2) = await SolvePart(isPart1: false, problem);
+                Console.WriteLine($"Part 2: {solution2} ({elapsedMillisecondsPart2} ms)");
+            }
 
             return new ElapsedTime(constructorElapsedTime, elapsedMillisecondsPart1, elapsedMillisecondsPart2);
         }
