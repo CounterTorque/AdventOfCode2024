@@ -5,6 +5,12 @@ using AdventOfCode2024;
 
 public class DayStub : BaseDay
 {
+
+    
+    public DayStub(string[]? inputLines = null) : base(inputLines)
+    {
+    }
+
     public override async ValueTask<int> Solve_1()
     {
         int part1 = 0;
