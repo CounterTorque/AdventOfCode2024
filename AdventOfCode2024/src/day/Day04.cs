@@ -5,7 +5,7 @@ using AdventOfCode2024;
 
 public class Day04 : BaseDay
 {
-    readonly char[] matchKey = ['X', 'M', 'A', 'S'];
+    
     
     public Day04(string[]? inputLines = null) : base(inputLines)
     {
@@ -15,6 +15,7 @@ public class Day04 : BaseDay
     {
         int part1 = 0;
         Debug.Assert(InputLines.Length != 0);
+        char[] matchKey = ['X', 'M', 'A', 'S'];
         
         int rowSize = InputLines[0].Length;
         int colSize = InputLines.Length;
@@ -32,14 +33,14 @@ public class Day04 : BaseDay
                     } 
 
                     int numMatches = 0;
-                    numMatches += await CheckDirection(puzzleBody, x, y, -1, -1, 1);
-                    numMatches += await CheckDirection(puzzleBody, x, y,  0, -1, 1);
-                    numMatches += await CheckDirection(puzzleBody, x, y,  1, -1, 1);
-                    numMatches += await CheckDirection(puzzleBody, x, y, -1,  0, 1);
-                    numMatches += await CheckDirection(puzzleBody, x, y,  1,  0, 1);
-                    numMatches += await CheckDirection(puzzleBody, x, y, -1,  1, 1);
-                    numMatches += await CheckDirection(puzzleBody, x, y,  0,  1, 1);
-                    numMatches += await CheckDirection(puzzleBody, x, y,  1,  1, 1);
+                    numMatches += await CheckDirection(puzzleBody, x, y, -1, -1, 1, matchKey);
+                    numMatches += await CheckDirection(puzzleBody, x, y,  0, -1, 1, matchKey);
+                    numMatches += await CheckDirection(puzzleBody, x, y,  1, -1, 1, matchKey);
+                    numMatches += await CheckDirection(puzzleBody, x, y, -1,  0, 1, matchKey);
+                    numMatches += await CheckDirection(puzzleBody, x, y,  1,  0, 1, matchKey);
+                    numMatches += await CheckDirection(puzzleBody, x, y, -1,  1, 1, matchKey);
+                    numMatches += await CheckDirection(puzzleBody, x, y,  0,  1, 1, matchKey);
+                    numMatches += await CheckDirection(puzzleBody, x, y,  1,  1, 1, matchKey);
 
                     part1 += numMatches;
                 }
@@ -50,7 +51,7 @@ public class Day04 : BaseDay
         return part1;
     }
 
-    private async Task<int> CheckDirection(char[][] puzzleBody, int x, int y, int dx, int dy, int dKey = 1)
+    private async Task<int> CheckDirection(char[][] puzzleBody, int x, int y, int dx, int dy, int dKey, char[] matchKey)
     {
         int tx = x + dx;
         int ty = y + dy;
@@ -69,7 +70,7 @@ public class Day04 : BaseDay
             return 1;
         }
 
-        int numMatches = await CheckDirection(puzzleBody, tx, ty, dx, dy, dKey + 1);
+        int numMatches = await CheckDirection(puzzleBody, tx, ty, dx, dy, dKey + 1, matchKey);
         return numMatches;        
     }
 
@@ -77,8 +78,32 @@ public class Day04 : BaseDay
     {
         int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        int rowSize = InputLines[0].Length;
+        int colSize = InputLines.Length;
+        char[][] puzzleBody = InputLines.Select(x => x.ToCharArray()).ToArray();
 
+        await Task.Run(async () => {
+            
+            for (int y = 0; y < colSize; y++)
+            {
+                for (int x = 0; x < rowSize; x++)
+                {
+                    //Start with any letter A
+                    if (puzzleBody[x][y] != 'A')
+                    {
+                        continue;
+                    } 
+                    //Then there are only 4 patterns for the X shape
+                    //Check all 4 of them and count the number of matches
+                    int numMatches = 0;
+
+
+
+
+                    part2 += numMatches;
+                }
+            }
+        
         });
 
         return part2;
