@@ -81,6 +81,12 @@ public class Day04 : BaseDay
         int rowSize = InputLines[0].Length;
         int colSize = InputLines.Length;
         char[][] puzzleBody = InputLines.Select(x => x.ToCharArray()).ToArray();
+        char[][] cornerLayouts = [
+            ['M', 'M', 'S', 'S'],
+            ['S', 'M', 'M', 'S'],
+            ['S', 'S', 'M', 'M'],
+            ['M', 'S', 'S', 'M'],
+        ];
 
         await Task.Run(async () => {
             
@@ -95,12 +101,20 @@ public class Day04 : BaseDay
                     } 
                     //Then there are only 4 patterns for the X shape
                     //Check all 4 of them and count the number of matches
-                    int numMatches = 0;
+                    
+                    for (int i = 0; i < cornerLayouts.Length; i++)
+                    {
+                        int numMatches = 0;    
+                        numMatches += await CheckDirection(puzzleBody, x, y, -1, -1, 0, [cornerLayouts[i][0]]);
+                        numMatches += await CheckDirection(puzzleBody, x, y,  1, -1, 0, [cornerLayouts[i][1]]); 
+                        numMatches += await CheckDirection(puzzleBody, x, y,  1,  1, 0, [cornerLayouts[i][2]]);
+                        numMatches += await CheckDirection(puzzleBody, x, y, -1,  1, 0, [cornerLayouts[i][3]]);
 
-
-
-
-                    part2 += numMatches;
+                        if (numMatches == 4)
+                        {
+                            part2 += 1;
+                        }
+                    }
                 }
             }
         
