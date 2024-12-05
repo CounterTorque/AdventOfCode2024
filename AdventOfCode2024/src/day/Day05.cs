@@ -87,9 +87,12 @@ public class Day05 : BaseDay
             return true;
         }
 
-        //TODO: Missing page numbers in the rules should be ignored. Both here and in the following list.
-        Debug.Assert(rules.ContainsKey(element));
+        if (!rules.ContainsKey(element))
+        {
+            return false;
+        }
 
+        //TODO: Missing page numbers in the rules should be ignored. Both here and in the following list.
         return followingList.All(x => rules[element].Contains(x));
     }
 
