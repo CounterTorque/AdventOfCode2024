@@ -11,16 +11,13 @@ public class Day05 : BaseDay
     
     public Day05(string[]? inputLines = null) : base(inputLines)
     {
+        BuildRuleUpdates();
     }
 
-    public override async ValueTask<int> Solve_1()
+    private void BuildRuleUpdates()
     {
-        int part1 = 0;
-        Debug.Assert(InputLines.Length != 0);
         bool buildUpdates = false;
-       
-        
-        foreach(string line in InputLines)
+        foreach (string line in InputLines)
         {
             if (string.IsNullOrEmpty(line))
             {
@@ -47,20 +44,22 @@ public class Day05 : BaseDay
             updates.Add(update);
         }
 
+    }
 
-        await Task.Run(() => {
-            //For each update
-            //step through from the last element to the first (You may skip the last element since it is always valid)
-            //For each element, check the rules that for the dictionary key of element, all the already seen elements are in its list
-            //Continue until you have validated the entire update. If you get to the end, it is valid
+    public override async ValueTask<int> Solve_1()
+    {
+        int part1 = 0;
+        Debug.Assert(InputLines.Length != 0);
 
+        await Task.Run(() =>
+        {
             foreach (List<int> update in updates)
             {
                 bool isValid = true;
                 for (int i = update.Count - 1; i >= 0; i--)
                 {
                     int element = update[i];
-                    bool rulesValid = ValidateElement(element, update.Skip(i+1).ToList());
+                    bool rulesValid = ValidateElement(element, update.Skip(i + 1).ToList());
                     if (!rulesValid)
                     {
                         isValid = false;
@@ -76,9 +75,9 @@ public class Day05 : BaseDay
             }
 
         });
-        
+
         return part1;
-    }
+    }   
 
     private bool ValidateElement(int element, List<int> followingList)
     {
@@ -92,7 +91,6 @@ public class Day05 : BaseDay
             return false;
         }
 
-        //TODO: Missing page numbers in the rules should be ignored. Both here and in the following list.
         return followingList.All(x => rules[element].Contains(x));
     }
 
@@ -102,6 +100,27 @@ public class Day05 : BaseDay
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
 
+            foreach (List<int> update in updates)
+            {
+                bool isValid = true;
+                for (int i = update.Count - 1; i >= 0; i--)
+                {
+                    int element = update[i];
+                    bool rulesValid = ValidateElement(element, update.Skip(i + 1).ToList());
+                    if (!rulesValid)
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                if (!isValid)
+                {
+                    //TODO: Order this update correctly according to the rules
+                    //Then take the middle element in the update
+                    
+                }
+            }
         });
 
         return part2;
