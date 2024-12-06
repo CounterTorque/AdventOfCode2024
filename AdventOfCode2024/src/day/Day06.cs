@@ -141,9 +141,13 @@ public class Day06 : BaseDay
 
             guardPosition.x = nextX;
             guardPosition.y = nextY;
-            currentPuzzleMap[guardPosition.x, guardPosition.y] |= visitType;
-            //Record the direction a tile was visited (vUp, vRight, etc.)
             //If we find a tile that has already been visited in the same way that detects a loop.
+            if ((currentPuzzleMap[guardPosition.x, guardPosition.y] & visitType) != 0)
+            {
+                return false;
+            }
+            currentPuzzleMap[guardPosition.x, guardPosition.y] |= visitType;
+            
         }
 
         return true;
@@ -167,14 +171,13 @@ public class Day06 : BaseDay
                 {
                     guardPosition = (x: guardStart.Item1, y: guardStart.Item2);
                     bool isVisted = (visitedPuzzleMap[x, y] & MapState.Visited) != 0;
-                    if (isVisted && 
-                        x != guardPosition.x && y != guardPosition.y)//Skip over the starting position
+                    if (isVisted) 
                     {
                         MapState[,] currentPuzzleMap = (MapState[,])puzzleMap.Clone();
                         currentPuzzleMap[x, y] = MapState.Object;
                         exitsMap = WalkMap(guardPosition, ref currentPuzzleMap);
                         if (!exitsMap)
-                        {                            
+                        {
                             part2 += 1;
                         }
                     }
