@@ -61,7 +61,7 @@ public class Day07 : BaseDay
 
         bool plus = SolveStep(target, curSum + values[0], values.Skip(1).ToArray());
         bool mult = SolveStep(target, curSum * values[0], values.Skip(1).ToArray());
-        
+        //long catNum = long.Parse(values[0].ToString() + values[1].ToString());        
         return plus || mult;
     }
 
