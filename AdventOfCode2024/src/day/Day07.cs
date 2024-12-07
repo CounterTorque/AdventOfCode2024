@@ -14,7 +14,9 @@ public class Day07 : BaseDay
     }
 
     List<TestCalibration> testcalibrations = new List<TestCalibration>();
-    
+
+    bool useCat = false;
+
     public Day07(string[]? inputLines = null) : base(inputLines)
     {
         foreach (string line in InputLines)
@@ -34,7 +36,8 @@ public class Day07 : BaseDay
     {
         long part1 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
 
             foreach (TestCalibration testCalibration in testcalibrations)
             {
@@ -46,7 +49,7 @@ public class Day07 : BaseDay
                 }
             }
         });
-        
+
         Console.WriteLine($"Part 1: {part1}");
         return 0;
     }
@@ -61,18 +64,36 @@ public class Day07 : BaseDay
 
         bool plus = SolveStep(target, curSum + values[0], values.Skip(1).ToArray());
         bool mult = SolveStep(target, curSum * values[0], values.Skip(1).ToArray());
-        //long catNum = long.Parse(values[0].ToString() + values[1].ToString());        
-        return plus || mult;
+
+        bool cat = false;
+        if (useCat && values.Length >= 1)
+        {
+            long catNum = long.Parse(curSum.ToString() + values[0].ToString());
+            cat = SolveStep(target, catNum, values.Skip(1).ToArray());
+        }
+
+        return plus || mult || cat;
     }
 
     public override async ValueTask<int> Solve_2()
     {
-        int part2 = 0;
+        long part2 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
+            useCat = true;
+            foreach (TestCalibration testCalibration in testcalibrations)
+            {
+                bool solvable = SolveStep(testCalibration.Target, 0, testCalibration.Values);
 
+                if (solvable)
+                {
+                    part2 += testCalibration.Target;
+                }
+            }
         });
 
-        return part2;
+        Console.WriteLine($"Part 2: {part2}");
+        return 0;
     }
 }
