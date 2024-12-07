@@ -8,8 +8,8 @@ public class Day07 : BaseDay
 
     struct TestCalibration
     {
-        public int Target { get; set; }
-        public int[] Values { get; set; }
+        public long Target { get; set; }
+        public long[] Values { get; set; }
 
     }
 
@@ -23,8 +23,8 @@ public class Day07 : BaseDay
 
             string[] targetValues = line.Split(":");
 
-            testCalibration.Target = int.Parse(targetValues[0]);
-            testCalibration.Values = targetValues[1].Trim().Split(" ").Select(int.Parse).ToArray();
+            testCalibration.Target = long.Parse(targetValues[0]);
+            testCalibration.Values = targetValues[1].Trim().Split(" ").Select(long.Parse).ToArray();
 
             testcalibrations.Add(testCalibration);
         }
@@ -32,13 +32,13 @@ public class Day07 : BaseDay
 
     public override async ValueTask<int> Solve_1()
     {
-        int part1 = 0;
+        long part1 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
 
             foreach (TestCalibration testCalibration in testcalibrations)
             {
-                bool solvable = TrySolve(testCalibration);
+                bool solvable = SolveStep(testCalibration.Target, 0, testCalibration.Values);
 
                 if (solvable)
                 {
@@ -47,15 +47,22 @@ public class Day07 : BaseDay
             }
         });
         
-        return part1;
+        Console.WriteLine($"Part 1: {part1}");
+        return 0;
     }
 
-    private bool TrySolve(TestCalibration testCalibration)
-    {
-        //Walking each value
-        int curValue = 0;
 
-        return false;
+    private bool SolveStep(long target, long curSum, long[] values)
+    {
+        if (values.Length == 0)
+        {
+            return curSum == target;
+        }
+
+        bool plus = SolveStep(target, curSum + values[0], values.Skip(1).ToArray());
+        bool mult = SolveStep(target, curSum * values[0], values.Skip(1).ToArray());
+        
+        return plus || mult;
     }
 
     public override async ValueTask<int> Solve_2()
