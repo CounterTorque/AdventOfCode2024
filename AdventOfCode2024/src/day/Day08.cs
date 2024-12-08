@@ -82,7 +82,35 @@ public class Day08 : BaseDay
                 Point delta = new Point(p2.X - p1.X, p2.Y - p1.Y);
                 Point? a1 = AddAntiNode(c, p1, delta, false);
 
+                if (useResonants)
+                {
+                    while(a1 != null)
+                    {
+                        a1 = AddAntiNode(c, a1.Value, delta, false);
+                    }
+
+                    a1 = AddAntiNode(c, p1, delta, true);
+                    while(a1 != null)
+                    {
+                        a1 = AddAntiNode(c, a1.Value, delta, true);
+                    }
+                }
+
                 Point? a2 = AddAntiNode(c, p2, delta, true);
+
+                if (useResonants)
+                {
+                    while(a2 != null)
+                    {
+                        a2 = AddAntiNode(c, a2.Value, delta, true);
+                    }
+
+                    a2 = AddAntiNode(c, p2, delta, false);
+                    while(a2 != null)
+                    {
+                        a2 = AddAntiNode(c, a2.Value, delta, false);
+                    }
+                }
             }
         }
     }
@@ -92,7 +120,7 @@ public class Day08 : BaseDay
         Point pd;
         if (positive)
         {
-            pd = new Point(p1.X + delta.X, p1.Y + delta.Y);    
+            pd = new Point(p1.X + delta.X, p1.Y + delta.Y);
         }
         else
         {
