@@ -6,17 +6,17 @@ using AdventOfCode2024;
 public class Day09 : BaseDay
 {
 
-    List<int> unpackedDisk = new List<int>();
+    List<long> unpackedDisk = new List<long>();
     
     public Day09(string[]? inputLines = null) : base(inputLines)
     {
         Debug.Assert(InputLines.Length == 1);
         bool isBlock = true;
-        int blockID = 0;
+        long blockID = 0;
         foreach(char c in InputLines[0])
         {
-            int blockSize = int.Parse(c.ToString());
-            for(int i = 0; i < blockSize; i++)
+            long blockSize = long.Parse(c.ToString());
+            for(long i = 0; i < blockSize; i++)
             {
                 if (isBlock)
                 {
@@ -24,7 +24,7 @@ public class Day09 : BaseDay
                 }
                 else
                 {
-                    unpackedDisk.Add(int.MinValue);
+                    unpackedDisk.Add(long.MinValue);
                 }                
             }
             if (isBlock)
@@ -37,28 +37,24 @@ public class Day09 : BaseDay
 
     public override async ValueTask<int> Solve_1()
     {
-        int part1 = 0;
+        long part1 = 0;
         await Task.Run(() => {
-            //Taking an index from the end
-            //Taking an index from the left most int.MinValue
-            //Work both towards the middle
-            //Replacing the int.MinValue with the value of the index, if it is not int.MinValue
 
             int endIndex = unpackedDisk.Count - 1;
-            int nextEmptyIndex = unpackedDisk.IndexOf(int.MinValue);
+            int nextEmptyIndex = unpackedDisk.IndexOf(long.MinValue);
             
             while (nextEmptyIndex < endIndex)
             {
-                int endValue = unpackedDisk[endIndex];
-                if (endValue == int.MinValue)
+                long endValue = unpackedDisk[endIndex];
+                if (endValue == long.MinValue)
                 {
                     endIndex--;
                     continue;
                 }
 
                 unpackedDisk[nextEmptyIndex] = endValue;
-                unpackedDisk[endIndex] = int.MinValue;
-                nextEmptyIndex = unpackedDisk.IndexOf(int.MinValue, nextEmptyIndex);
+                unpackedDisk[endIndex] = long.MinValue;
+                nextEmptyIndex = unpackedDisk.IndexOf(long.MinValue, nextEmptyIndex);
             }
 
         });
@@ -66,7 +62,7 @@ public class Day09 : BaseDay
         //Calculate "checksum"
         for (int i = 0; i < unpackedDisk.Count; i++)
         {
-            int value = unpackedDisk[i];
+            long value = unpackedDisk[i];
             if (value == int.MinValue)
             {
                 break;
@@ -76,7 +72,8 @@ public class Day09 : BaseDay
         }
         
         // 554328789 TO LOW
-        return part1;
+        Console.WriteLine($"Part 1: {part1}");
+        return 0;
     }
 
 
