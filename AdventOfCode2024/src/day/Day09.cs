@@ -24,7 +24,7 @@ public class Day09 : BaseDay
                 }
                 else
                 {
-                    unpackedDisk.Add(long.MinValue);
+                    unpackedDisk.Add(-blockSize);
                 }                
             }
             if (isBlock)
@@ -41,12 +41,12 @@ public class Day09 : BaseDay
         await Task.Run(() => {
 
             int endIndex = unpackedDisk.Count - 1;
-            int nextEmptyIndex = unpackedDisk.IndexOf(long.MinValue);
+            int nextEmptyIndex = unpackedDisk.FindIndex(x => x < 0);
             
             while (nextEmptyIndex < endIndex)
             {
                 long endValue = unpackedDisk[endIndex];
-                if (endValue == long.MinValue)
+                if (endValue < 0)
                 {
                     endIndex--;
                     continue;
@@ -54,7 +54,7 @@ public class Day09 : BaseDay
 
                 unpackedDisk[nextEmptyIndex] = endValue;
                 unpackedDisk[endIndex] = long.MinValue;
-                nextEmptyIndex = unpackedDisk.IndexOf(long.MinValue, nextEmptyIndex);
+                nextEmptyIndex = unpackedDisk.FindIndex(nextEmptyIndex + 1, x => x < 0);
             }
 
         });
@@ -63,15 +63,14 @@ public class Day09 : BaseDay
         for (int i = 0; i < unpackedDisk.Count; i++)
         {
             long value = unpackedDisk[i];
-            if (value == int.MinValue)
+            if (value < 0)
             {
-                break;
+                continue;
             }
 
             part1 += (value * i);
         }
         
-        // 554328789 TO LOW
         Console.WriteLine($"Part 1: {part1}");
         return 0;
     }
@@ -79,11 +78,26 @@ public class Day09 : BaseDay
 
     public override async ValueTask<int> Solve_2()
     {
-        int part2 = 0;
+        long part2 = 0;
         await Task.Run(() => {
 
+        //TODO: Unpack only if it fits, walking right to left for each file ID
+
+
+        //Calculate "checksum"
+        for (int i = 0; i < unpackedDisk.Count; i++)
+        {
+            long value = unpackedDisk[i];
+            if (value < 0)
+            {
+                continue;
+            }
+
+            part2 += (value * i);
+        }
         });
 
-        return part2;
+        Console.WriteLine($"Part 2: {part2}");
+        return 0;
     }
 }
