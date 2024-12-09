@@ -39,9 +39,43 @@ public class Day09 : BaseDay
     {
         int part1 = 0;
         await Task.Run(() => {
+            //Taking an index from the end
+            //Taking an index from the left most int.MinValue
+            //Work both towards the middle
+            //Replacing the int.MinValue with the value of the index, if it is not int.MinValue
+
+            int endIndex = unpackedDisk.Count - 1;
+            int nextEmptyIndex = unpackedDisk.IndexOf(int.MinValue);
+            
+            while (nextEmptyIndex < endIndex)
+            {
+                int endValue = unpackedDisk[endIndex];
+                if (endValue == int.MinValue)
+                {
+                    endIndex--;
+                    continue;
+                }
+
+                unpackedDisk[nextEmptyIndex] = endValue;
+                unpackedDisk[endIndex] = int.MinValue;
+                nextEmptyIndex = unpackedDisk.IndexOf(int.MinValue, nextEmptyIndex);
+            }
 
         });
+
+        //Calculate "checksum"
+        for (int i = 0; i < unpackedDisk.Count; i++)
+        {
+            int value = unpackedDisk[i];
+            if (value == int.MinValue)
+            {
+                break;
+            }
+
+            part1 += (value * i);
+        }
         
+        // 554328789 TO LOW
         return part1;
     }
 
