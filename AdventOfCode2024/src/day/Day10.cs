@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
 using AdventOfCode2024;
@@ -23,6 +22,8 @@ public class Day10 : BaseDay
     int yMax;
 
     List<TrailPoint> trailHeads = new List<TrailPoint>();
+
+    bool isPart2 = false;
 
     public Day10(string[]? inputLines = null) : base(inputLines)
     {
@@ -82,14 +83,14 @@ public class Day10 : BaseDay
 
             Point pDown = new Point(currentTP.point.X, currentTP.point.Y + 1);
             EnsureNextPoint(nextHeight, pDown, ref trailPath);
-            
+
             Point pLeft = new Point(currentTP.point.X - 1, currentTP.point.Y);
             EnsureNextPoint(nextHeight, pLeft, ref trailPath);
-            
+
             Point pRight = new Point(currentTP.point.X + 1, currentTP.point.Y);
             EnsureNextPoint(nextHeight, pRight, ref trailPath);
         }
-        
+
         return score;
     }
 
@@ -102,7 +103,7 @@ public class Day10 : BaseDay
             {
                 //Check that this point isn't already in the list as visited
                 TrailPoint tp = new TrailPoint(nextPoint, nextHeight);
-                if (!trailHeads.Contains(tp))
+                if (!trailHeads.Contains(tp) || isPart2)
                 {
                     trailHeads.Add(tp);
                 }
@@ -113,11 +114,15 @@ public class Day10 : BaseDay
 
     public override async ValueTask<int> Solve_2()
     {
+        isPart2 = true;
         int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() =>
         {
-
+            foreach (TrailPoint trailHead in trailHeads)
+            {
+                part2 += WalkTrailHead(trailHead);
+            }
         });
 
         return part2;
