@@ -54,7 +54,7 @@ public class Day10 : BaseDay
         {
             foreach (TrailPoint trailHead in trailHeads)
             {
-                part1 = WalkTrailHead(trailHead);
+                part1 += WalkTrailHead(trailHead);
             }
         });
 
@@ -64,14 +64,12 @@ public class Day10 : BaseDay
     private int WalkTrailHead(TrailPoint trailHead)
     {
         int score = 0;
-        ConcurrentQueue<TrailPoint> trailHeads = new ConcurrentQueue<TrailPoint>();
-        trailHeads.Enqueue(trailHead);
-        foreach (TrailPoint trailPoint in trailHeads)
-        {
-            TrailPoint currentTP;
-            bool success = trailHeads.TryDequeue(out currentTP);
-            Debug.Assert(success);
+        List<TrailPoint> trailPath = new List<TrailPoint>();
+        trailPath.Add(trailHead);
 
+        for (int i = 0; i < trailPath.Count; i++)
+        {
+            TrailPoint currentTP = trailPath[i];
             if (currentTP.height == 9)
             {
                 score++;
@@ -80,42 +78,37 @@ public class Day10 : BaseDay
 
             int nextHeight = currentTP.height + 1;
             Point pUp = new Point(currentTP.point.X, currentTP.point.Y - 1);
-            if (ValidNextPoint(currentTP.height, pUp))
-            {
-                //Check that this point isn't already in the list as visited
-            }
+            EnsureNextPoint(nextHeight, pUp, ref trailPath);
 
             Point pDown = new Point(currentTP.point.X, currentTP.point.Y + 1);
-            if (ValidNextPoint(currentTP.height, pDown))
-            {
-                
-            }
-
+            EnsureNextPoint(nextHeight, pDown, ref trailPath);
+            
             Point pLeft = new Point(currentTP.point.X - 1, currentTP.point.Y);
-            if (ValidNextPoint(currentTP.height, pLeft))
-            {
-                
-            }
-
+            EnsureNextPoint(nextHeight, pLeft, ref trailPath);
+            
             Point pRight = new Point(currentTP.point.X + 1, currentTP.point.Y);
-            if (ValidNextPoint(currentTP.height, pRight))
-            {
-
-            }
+            EnsureNextPoint(nextHeight, pRight, ref trailPath);
         }
         
         return score;
     }
 
-    private bool ValidNextPoint(int expecteHeight, Point nextPoint)
+    private void EnsureNextPoint(int expecteHeight, Point nextPoint, ref List<TrailPoint> trailHeads)
     {
         if (nextPoint.Y >= 0 && nextPoint.X >= 0 && nextPoint.X < xMax && nextPoint.Y < yMax)
         {
             int nextHeight = puzzleMap[nextPoint.X, nextPoint.Y];
-            return expecteHeight == nextHeight;
+            if (expecteHeight == nextHeight)
+            {
+                //Check that this point isn't already in the list as visited
+                TrailPoint tp = new TrailPoint(nextPoint, nextHeight);
+                if (!trailHeads.Contains(tp))
+                {
+                    trailHeads.Add(tp);
+                }
+            }
         }
 
-        return false;
     }
 
     public override async ValueTask<int> Solve_2()
