@@ -5,7 +5,7 @@ internal class Program
 {
     private static async Task Main(string[] args)
     {
-        var factory = new BaseDayFactory<Day10>(input => new Day10(input));
+        var factory = new BaseDayFactory<Day11>(input => new Day11(input));
         await Solver.Solve(factory, Solver.Parts.BOTH);
     }
 }
