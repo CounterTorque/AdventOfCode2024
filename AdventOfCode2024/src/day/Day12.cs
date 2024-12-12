@@ -5,10 +5,21 @@ using AdventOfCode2024;
 
 public class Day12 : BaseDay
 {
+    [Flags]
+    enum FenceSides
+    {
+        Up = 0x1,
+        Down = 0x10,
+        Left = 0x100,
+        Right = 0x1000
+    };
+
     class Plot
     {
         public char Type;
-        public int FenceSides;
+        public int PlotSides;
+
+        public FenceSides Fenced { get; set; }
     }
 
     int xMax;
@@ -16,7 +27,7 @@ public class Day12 : BaseDay
 
     Plot[,] PlotMap;
     List<List<Point>> PlotSets = new List<List<Point>>();
-    
+
     public Day12(string[]? inputLines = null) : base(inputLines)
     {
         List<Point> plotCollection = new List<Point>();
@@ -30,7 +41,7 @@ public class Day12 : BaseDay
             {
                 plotCollection.Add(new Point(x, y));
                 char plotType = InputLines[y][x];
-                PlotMap[x, y] = new Plot() { Type = plotType, FenceSides = 0 };
+                PlotMap[x, y] = new Plot() { Type = plotType, PlotSides = 0 };
             }
         }
 
@@ -63,10 +74,11 @@ public class Day12 : BaseDay
                     {
                         plotQueue.Enqueue(pUp);
                     }
-                }    
+                }
                 else
                 {
-                    curPlot.FenceSides++;
+                    curPlot.PlotSides++;
+                    curPlot.Fenced |= FenceSides.Up;
                 }
 
                 if (pDown.Y >= 0 && pDown.X >= 0 && pDown.X < xMax && pDown.Y < yMax && PlotMap[pDown.X, pDown.Y].Type == currentPlotType)
@@ -78,7 +90,8 @@ public class Day12 : BaseDay
                 }
                 else
                 {
-                    curPlot.FenceSides++;
+                    curPlot.PlotSides++;
+                    curPlot.Fenced |= FenceSides.Down;
                 }
 
                 if (pLeft.Y >= 0 && pLeft.X >= 0 && pLeft.X < xMax && pLeft.Y < yMax && PlotMap[pLeft.X, pLeft.Y].Type == currentPlotType)
@@ -90,7 +103,8 @@ public class Day12 : BaseDay
                 }
                 else
                 {
-                    curPlot.FenceSides++;
+                    curPlot.PlotSides++;
+                    curPlot.Fenced |= FenceSides.Left;
                 }
 
                 if (pRight.Y >= 0 && pRight.X >= 0 && pRight.X < xMax && pRight.Y < yMax && PlotMap[pRight.X, pRight.Y].Type == currentPlotType)
@@ -102,9 +116,10 @@ public class Day12 : BaseDay
                 }
                 else
                 {
-                    curPlot.FenceSides++;
+                    curPlot.PlotSides++;
+                    curPlot.Fenced |= FenceSides.Right;
                 }
-            }  
+            }
         }
     }
 
@@ -113,7 +128,8 @@ public class Day12 : BaseDay
 
         int part1 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
 
             foreach (List<Point> plotset in PlotSets)
             {
@@ -122,13 +138,13 @@ public class Day12 : BaseDay
                 foreach (Point plotPoint in plotset)
                 {
                     Plot plot = PlotMap[plotPoint.X, plotPoint.Y];
-                    pererimeter += plot.FenceSides;
+                    pererimeter += plot.PlotSides;
                 }
                 part1 += area * pererimeter;
             }
 
         });
-        
+
         return part1;
     }
 
@@ -137,10 +153,63 @@ public class Day12 : BaseDay
     {
         int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
+
+            foreach (List<Point> plotset in PlotSets)
+            {
+                int area = plotset.Count;
+                int sides = 0;
+                foreach (FenceSides currentFence in Enum.GetValues(typeof(FenceSides)))
+                {
+                    foreach (Point curPoint in plotset)
+                    {
+                        Point deltaUp = new Point(0, -1);
+                        Point deltaDown = new Point(0, 1);
+                        Point deltaLeft = new Point(-1, 0);
+                        Point deltaRight = new Point(1, 0);
+
+                        Plot plot = PlotMap[curPoint.X, curPoint.Y];
+                        if (plot.Fenced.HasFlag(currentFence))
+                        {
+                            sides++;
+                            plot.Fenced &= ~currentFence; //Remove the side we just counted.
+
+                            //Move along the left and right of this and remove if found. If not found stop.
+                            if (currentFence == FenceSides.Left || currentFence == FenceSides.Right)
+                            {
+                                ClaimFence(plotset, currentFence, curPoint, deltaUp);
+                                ClaimFence(plotset, currentFence, curPoint, deltaDown);
+                            }
+                            else
+                            {
+                                ClaimFence(plotset, currentFence, curPoint, deltaLeft);
+                                ClaimFence(plotset, currentFence, curPoint, deltaRight);
+                            }
+                        }
+                    }
+                }
+
+                part2 += area * sides;
+            }
 
         });
 
         return part2;
+    }
+
+    private void ClaimFence(List<Point> plotset, FenceSides currentFence, Point pointCurrent, Point delta)
+    {
+        Point pNext = new Point(pointCurrent.X + delta.X, pointCurrent.Y + delta.Y);
+        while (plotset.Contains(pNext))
+        {
+            Plot plotNext = PlotMap[pNext.X, pNext.Y];
+            if (!plotNext.Fenced.HasFlag(currentFence))
+            {
+                break;
+            }
+            plotNext.Fenced &= ~currentFence; //Remove the side we just counted.
+            pNext = new Point(pNext.X + delta.X, pNext.Y + delta.Y);
+        }
     }
 }
