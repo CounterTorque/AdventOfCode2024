@@ -72,74 +72,67 @@ public class Day11 : BaseDay
 
     public override async ValueTask<int> Solve_2()
     {
-        int iterations = 0;
-        int part2 = 0;
-        const int chunkSize = 100000;
-
-        await Task.Run(() =>
+        return await Task.Run(() =>
         {
-            Queue<List<long>> chunks = new Queue<List<long>>();
-            chunks.Enqueue(stones);
+            var stoneFrequency = new Dictionary<long, long>(); // {stone value, frequency}
 
-            while (iterations < 75)
+            // Initialize with initial stones
+            foreach (long stone in stones)
             {
-                int currentChunkCount = chunks.Count;
+                if (!stoneFrequency.ContainsKey(stone))
+                    stoneFrequency[stone] = 0;
+                stoneFrequency[stone]++;
+            }
 
-                for (int chunkIndex = 0; chunkIndex < currentChunkCount; chunkIndex++)
+            for (int iterations = 0; iterations < 75; iterations++)
+            {
+                var nextFrequency = new Dictionary<long, long>();
+
+                foreach (var kvp in stoneFrequency)
                 {
-                    List<long> currentChunk = chunks.Dequeue();
-                    List<long> nextChunk = new List<long>(chunkSize);
+                    long stone = kvp.Key;
+                    long count = kvp.Value;
 
-                    foreach (var stone in currentChunk)
+                    if (stone == 0)
                     {
-                        if (stone == 0)
+                        if (!nextFrequency.ContainsKey(1))
+                            nextFrequency[1] = 0;
+                        nextFrequency[1] += count;
+                    }
+                    else
+                    {
+                        int digits = (int)Math.Log10(stone) + 1;
+                        if (digits % 2 == 0)
                         {
-                            nextChunk.Add(1);
-                            continue;
-                        }
+                            int half = digits / 2;
+                            long divisor = (long)Math.Pow(10, half);
+                            long left = stone / divisor;
+                            long right = stone % divisor;
 
-                        string numStr = stone.ToString();
-                        int digits = numStr.Length;
-                        bool isEven = digits % 2 == 0;
+                            if (!nextFrequency.ContainsKey(left))
+                                nextFrequency[left] = 0;
+                            nextFrequency[left] += count;
 
-                        if (isEven)
-                        {
-                            string lefthalf = numStr.Substring(0, digits / 2);
-                            string righthalf = numStr.Substring(digits / 2, digits / 2);
-                            long left = long.Parse(lefthalf);
-                            long right = long.Parse(righthalf);
-                            nextChunk.Add(left);
-                            nextChunk.Add(right);
+                            if (!nextFrequency.ContainsKey(right))
+                                nextFrequency[right] = 0;
+                            nextFrequency[right] += count;
                         }
                         else
                         {
-                            long newNum = stone * 2024;
-                            nextChunk.Add(newNum);
-                        }
+                            long newStone = stone * 2024;
 
-                        // When a chunk reaches its size limit, enqueue it and start a new one
-                        if (nextChunk.Count >= chunkSize)
-                        {
-                            chunks.Enqueue(nextChunk);
-                            nextChunk = new List<long>(chunkSize);
+                            if (!nextFrequency.ContainsKey(newStone))
+                                nextFrequency[newStone] = 0;
+                            nextFrequency[newStone] += count;
                         }
-                    }
-
-                    // Enqueue the remaining items in the current chunk
-                    if (nextChunk.Count > 0)
-                    {
-                        chunks.Enqueue(nextChunk);
                     }
                 }
 
-                iterations++;
-                Console.WriteLine($"Iteration {iterations}: Total Chunks: {chunks.Count}");
+                stoneFrequency = nextFrequency; // Update for the next iteration
+                Console.WriteLine($"Iteration {iterations + 1}: {stoneFrequency.Values.Sum()} stones");
             }
 
-            // Count all elements across all chunks
-            part2 = chunks.Sum(chunk => chunk.Count);
+            return 0;
         });
-
-        return part2;
     }
 }
