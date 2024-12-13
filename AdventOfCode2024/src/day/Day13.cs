@@ -100,6 +100,7 @@ public class Day13 : BaseDay
 
     private long SolveClawProblem(ClawProblem problem, long pMod = 0)
     {
+        Console.WriteLine($"Solving problem {problem.Prize}");
         long BestSolution = 0;
         List<(long, long)> xSolutions = FindCombinations(pMod+problem.Prize.Item1, problem.AButton.Item1, problem.BButton.Item1);
         List<(long, long)> ySolutions = FindCombinations(pMod+problem.Prize.Item2, problem.AButton.Item2, problem.BButton.Item2);
@@ -108,7 +109,7 @@ public class Day13 : BaseDay
         {
             return 0;
         }
-        
+
         //Now We need to find the intersection of the two sets of solutions
         List<(long, long)> solutions = new List<(long, long)>();
         foreach ((long nA, long nB) in xSolutions)
@@ -134,13 +135,19 @@ public class Day13 : BaseDay
 
     public override async ValueTask<int> Solve_2()
     {
-        int part2 = 0;
+        long part2 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() =>
         {
+            long pMod = 10000000000000;
+            foreach (ClawProblem problem in ClawProblems)
+            {
+                part2 += SolveClawProblem(problem, pMod);
+            }
 
         });
 
-        return part2;
+        Console.WriteLine($"Part 1: {part2}");
+        return 0;
     }
 }
