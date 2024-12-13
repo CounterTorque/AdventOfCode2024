@@ -58,11 +58,81 @@ public class Day13 : BaseDay
         return (x, y);
     }
 
-    
+    public static (long, long, long) ExtendedGcd(long a, long b)
+    {
+        if (a == 0)
+        {
+            return (b, 0, 1);
+        }
+
+        var (gcd, x1, y1) = ExtendedGcd(b % a, a);
+        long x = y1 - (b / a) * x1;
+        long y = x1;
+
+        return (gcd, x, y);
+    }
+
+
     public List<(long, long)> FindCombinations(long Pv, long Av, long Bv)
     {
-        //Diophantine equation approach
         List<(long, long)> solutions = new List<(long, long)>();
+
+        var (g, u, v) = ExtendedGcd(Av, Bv);
+        if (Pv % g != 0)
+        {
+            return solutions;
+        }
+
+        // Scale the solution
+        // long u0 = u * (Pv / g);
+        // long v0 = v * (Pv / g);
+
+        
+        // long k_min_from_nA = 0;
+        // if (Bv / g != 0)
+        // {
+        //     k_min_from_nA = -u0 / (Bv / g);;
+        // }
+        // long k_min_from_nB = 0;
+        // if (Av / g != 0)
+        // {
+        //     k_min_from_nB = v0 / (Av / g);
+        // }
+        // long k_min = Math.Max(k_min_from_nA, k_min_from_nB);
+        
+        // long k_max_from_nA = long.MaxValue;
+        // if (Av / g != 0) 
+        // {
+        //     k_max_from_nA = v0 / (Av / g);
+        // }
+        // long k_max_from_nB = long.MaxValue;
+        // if (Bv / g != 0)
+        // {
+        //     k_max_from_nB = u0 / (Bv / g);
+        // }
+        // long k_max = Math.Min(k_max_from_nA, k_max_from_nB);
+        
+        // long k = k_min;
+        // while (true)
+        // {
+        //     long nAPrime = u0 + k * (Bv / g);
+        //     long nBPrime = v0 - k * (Av / g);    
+
+        //     if (nAPrime < 0 && nBPrime < 0)
+        //     {
+        //         break;
+        //     }
+
+        //     if (nAPrime >= 0 && nBPrime >= 0)
+        //     {
+        //         solutions.Add((nAPrime, nBPrime));
+        //     }
+        //     k++;
+        //     if (k > k_max)
+        //     {
+        //         break;
+        //     }
+        // }
 
         // Try possible values of nB
         for (long nB = 0; nB <= Pv / Bv; nB++)
@@ -103,9 +173,13 @@ public class Day13 : BaseDay
         Console.WriteLine($"Solving problem {problem.Prize}");
         long BestSolution = 0;
         List<(long, long)> xSolutions = FindCombinations(pMod+problem.Prize.Item1, problem.AButton.Item1, problem.BButton.Item1);
+        if (xSolutions.Count == 0)
+        {
+            return 0;
+        }
         List<(long, long)> ySolutions = FindCombinations(pMod+problem.Prize.Item2, problem.AButton.Item2, problem.BButton.Item2);
         //First check that there even are solutions for each button coordinate
-        if (xSolutions.Count == 0 || ySolutions.Count == 0)
+        if (ySolutions.Count == 0)
         {
             return 0;
         }
