@@ -7,12 +7,12 @@ public class Day13 : BaseDay
 {
     class ClawProblem
     {
-        public (int, int) AButton = (0, 0);
-        public (int, int) BButton = (0, 0);
-        public (int, int) Prize = (0, 0);
+        public (long, long) AButton = (0, 0);
+        public (long, long) BButton = (0, 0);
+        public (long, long) Prize = (0, 0);
 
-        public List<(int, int)> Solutions = new();
-        public int BestSolution = int.MaxValue;
+        public List<(long, long)> Solutions = new();
+        public long BestSolution = long.MaxValue;
     }
 
     List<ClawProblem> ClawProblems = new();
@@ -59,21 +59,21 @@ public class Day13 : BaseDay
     }
 
     
-    public List<(int, int)> FindCombinations(int Pv, int Av, int Bv)
+    public List<(long, long)> FindCombinations(long Pv, long Av, long Bv)
     {
         //Diophantine equation approach
-        List<(int, int)> solutions = new List<(int, int)>();
+        List<(long, long)> solutions = new List<(long, long)>();
 
         // Try possible values of nB
-        for (int nB = 0; nB <= Pv / Bv; nB++)
+        for (long nB = 0; nB <= Pv / Bv; nB++)
         {
             // Calculate remaining amount after nB contribution
-            int remaining = Pv - (nB * Bv);
+            long remaining = Pv - (nB * Bv);
 
             // Check if remaining is divisible by A value
             if (remaining % Av == 0)
             {
-                int nA = remaining / Av;
+                long nA = remaining / Av;
                 solutions.Add((nA, nB));
             }
         }
@@ -89,32 +89,7 @@ public class Day13 : BaseDay
         {
             foreach (ClawProblem problem in ClawProblems)
             {
-                List<(int, int)> xSolutions = FindCombinations(problem.Prize.Item1, problem.AButton.Item1, problem.BButton.Item1);
-                List<(int, int)> ySolutions = FindCombinations(problem.Prize.Item2, problem.AButton.Item2, problem.BButton.Item2);
-                //First check that there even are solutions for each button coordinate
-                if (xSolutions.Count == 0 || ySolutions.Count == 0)
-                {
-                    continue;
-                }
-                //Now We need to find the intersection of the two sets of solutions
-                List<(int, int)> solutions = new List<(int, int)>();
-                foreach ((int nA, int nB) in xSolutions)
-                {
-                    if (ySolutions.Contains((nA, nB)))
-                    {
-                        solutions.Add((nA, nB));
-                        int solutionCost = (nA*3) + nB;
-                        if (solutionCost < problem.BestSolution)
-                        {
-                            problem.BestSolution = solutionCost;
-                        }
-                    }
-                }
-                if (solutions.Count > 0)
-                {
-                    problem.Solutions.AddRange(solutions);
-                    part1 += problem.BestSolution;
-                }
+                part1 += SolveClawProblem(problem);
             }
 
         });
@@ -123,6 +98,39 @@ public class Day13 : BaseDay
         return 0;
     }
 
+    private long SolveClawProblem(ClawProblem problem, long pMod = 0)
+    {
+        long BestSolution = 0;
+        List<(long, long)> xSolutions = FindCombinations(pMod+problem.Prize.Item1, problem.AButton.Item1, problem.BButton.Item1);
+        List<(long, long)> ySolutions = FindCombinations(pMod+problem.Prize.Item2, problem.AButton.Item2, problem.BButton.Item2);
+        //First check that there even are solutions for each button coordinate
+        if (xSolutions.Count == 0 || ySolutions.Count == 0)
+        {
+            return 0;
+        }
+        
+        //Now We need to find the intersection of the two sets of solutions
+        List<(long, long)> solutions = new List<(long, long)>();
+        foreach ((long nA, long nB) in xSolutions)
+        {
+            if (ySolutions.Contains((nA, nB)))
+            {
+                solutions.Add((nA, nB));
+                long solutionCost = (nA * 3) + nB;
+                if (solutionCost < problem.BestSolution)
+                {
+                    problem.BestSolution = solutionCost;
+                }
+            }
+        }
+        if (solutions.Count > 0)
+        {
+            problem.Solutions.AddRange(solutions);
+            BestSolution = problem.BestSolution;
+        }
+
+        return BestSolution;
+    }
 
     public override async ValueTask<int> Solve_2()
     {
