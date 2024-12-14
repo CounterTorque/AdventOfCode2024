@@ -7,7 +7,7 @@ namespace AdventOfCode2024
         protected virtual string ClassPrefix { get; } = "Problem";
 
         protected virtual string InputFileDirPath { get; } = "Inputs";
- 
+
         protected virtual string InputFileExtension { get; } = ".txt";
 
   
@@ -32,7 +32,7 @@ namespace AdventOfCode2024
             }
 
             return Path.Combine(projectRoot, InputFileDirPath, $"Day{index}", $"Day{index}.{InputFileExtension.TrimStart('.')}");
-        }
+        } 
 
         public abstract ValueTask<int> Solve_1();
 

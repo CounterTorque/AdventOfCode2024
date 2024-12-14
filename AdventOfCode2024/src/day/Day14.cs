@@ -11,7 +11,30 @@ public class Day14 : BaseDay
         public Point Position = new Point(0, 0);
         public Point Velocity = new Point(0, 0);
 
-        public int CycleLength = 0;
+        public void Step()
+        {
+            int xNext = Position.X + Velocity.X;
+            int yNext = Position.Y + Velocity.Y;
+            if (xNext >= xMax)
+            {
+                xNext = xNext - xMax;
+            }
+            else if (xNext < 0)
+            {
+                xNext = xNext + xMax;
+            }
+
+            if (yNext >= yMax)
+            {
+                yNext = yNext - yMax;
+            }
+            else if (yNext < 0)
+            {
+                yNext = yNext + yMax;
+            }
+            Position.X = xNext;
+            Position.Y = yNext;
+        }
     }
 
     List<Robot> robots = new List<Robot>();
@@ -120,27 +143,36 @@ public class Day14 : BaseDay
 
     public override async ValueTask<int> Solve_2()
     {
+        int maxIterations = xMax * yMax;
         int part2 = 0;
+
         var individualCycles = new List<int>();
         await Task.Run(() =>
         {
-
-            //Calculate the position after 100 iterations
-            foreach (Robot robot in robots)
+            for (int i = 0; i < maxIterations; i++)
             {
-                int xCycle = SingleCycle(robot.Position.X, robot.Velocity.X, xMax);
-                int yCycle = SingleCycle(robot.Position.Y, robot.Velocity.Y, yMax);
-                robot.CycleLength = LCM(xCycle, yCycle);
-                individualCycles.Add(robot.CycleLength);
-            }
+                List<Point> positions = new List<Point>();
 
-            part2 = individualCycles.Aggregate((a, b) => LCM(a, b));
+                foreach (Robot robot in robots)
+                {
+                    positions.Add(robot.Position);
+                }
+                //Draw to a bmp file
+                string name = "C:\\Temp\\Day14\\" + "Iteration " + i + ".bmp";
+                
+                PointDrawer.DrawPointsToImage(positions, xMax, yMax, name, Color.White, Color.Black, 4);
+
+                foreach (Robot robot in robots)
+                {
+                    robot.Step();
+                }
+            }
+            
          
 
         });
 
-        //78573859  To HIGH
-        //10403 TO HIGH
+        //7271 Draws the picture.
         return part2;
     }
 }
