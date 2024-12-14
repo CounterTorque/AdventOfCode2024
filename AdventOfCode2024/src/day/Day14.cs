@@ -151,16 +151,20 @@ public class Day14 : BaseDay
         {
             for (int i = 0; i < maxIterations; i++)
             {
-                List<Point> positions = new List<Point>();
+                HashSet<Point> positions = new HashSet<Point>();
 
                 foreach (Robot robot in robots)
                 {
                     positions.Add(robot.Position);
                 }
+                if (positions.Count == robots.Count)
+                {
+                    Console.WriteLine($"Found a NON Overlap at {i} iterations");
+                }
                 //Draw to a bmp file
                 string name = "C:\\Temp\\Day14\\" + "Iteration " + i + ".bmp";
                 
-                PointDrawer.DrawPointsToImage(positions, xMax, yMax, name, Color.White, Color.Black, 4);
+                //PointDrawer.DrawPointsToImage(positions, xMax, yMax, name, Color.White, Color.Black, 4);
 
                 foreach (Robot robot in robots)
                 {
