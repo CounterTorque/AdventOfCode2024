@@ -10,6 +10,8 @@ public class Day14 : BaseDay
     {
         public Point Position = new Point(0, 0);
         public Point Velocity = new Point(0, 0);
+
+        public int CycleLength = 0;
     }
 
     List<Robot> robots = new List<Robot>();
@@ -18,7 +20,7 @@ public class Day14 : BaseDay
 
     static int xQuadrantMid = xMax / 2;
     static int yQuadrantMid = yMax / 2;
-    
+
     public Day14(string[]? inputLines = null) : base(inputLines)
     {
         foreach (string line in InputLines)
@@ -46,7 +48,8 @@ public class Day14 : BaseDay
         int iterations = 100;
         int part1 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
             int[] quadrentCounts = new int[4] { 0, 0, 0, 0 };
 
             //Calculate the position after 100 iterations
@@ -83,19 +86,61 @@ public class Day14 : BaseDay
 
 
         });
-        
+
         return part1;
+    }
+
+    public static int GCD(int a, int b)
+    {
+        while (b != 0)
+        {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    public static int LCM(int a, int b)
+    {
+        return (a / GCD(a, b)) * b;
+    }
+
+    int SingleCycle(int pos, int vel, int wrap)
+    {
+        int gcd = GCD(vel, wrap);
+        if (gcd == 1)
+        {
+            return wrap;
+        }
+
+        return wrap * vel / gcd;
     }
 
 
     public override async ValueTask<int> Solve_2()
     {
         int part2 = 0;
-        Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        var individualCycles = new List<int>();
+        await Task.Run(() =>
+        {
+
+            //Calculate the position after 100 iterations
+            foreach (Robot robot in robots)
+            {
+                int xCycle = SingleCycle(robot.Position.X, robot.Velocity.X, xMax);
+                int yCycle = SingleCycle(robot.Position.Y, robot.Velocity.Y, yMax);
+                robot.CycleLength = LCM(xCycle, yCycle);
+                individualCycles.Add(robot.CycleLength);
+            }
+
+            part2 = individualCycles.Aggregate((a, b) => LCM(a, b));
+         
 
         });
 
+        //78573859  To HIGH
+        //10403 TO HIGH
         return part2;
     }
 }
