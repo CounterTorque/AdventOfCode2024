@@ -5,12 +5,15 @@ using AdventOfCode2024;
 
 public class Day15 : BaseDay
 {
+    [Flags]
     enum EMapState
     {
-        Empty,
-        Box,
-        Robot,
-        Wall
+        Empty = 1,        
+        Robot = 2,
+        Wall = 4,
+        BoxLeft = 8,
+        BoxRight = 16,
+        Box = BoxLeft & BoxRight,
     }
 
     enum EDirection
@@ -30,7 +33,48 @@ public class Day15 : BaseDay
     
     public Day15(string[]? inputLines = null) : base(inputLines)
     {
-        bool isMapParse = true;
+        
+    }
+
+    private bool CanMoveInto(Point objectPos, Point delta)
+    {
+        Point newPos = new Point(objectPos.X + delta.X, objectPos.Y + delta.Y);
+        if ((newPos.X < 0) || (newPos.Y < 0) || (newPos.X >= xMax) || (newPos.Y >= yMax))
+        {
+            return false;
+        }
+
+        switch(map[newPos.X, newPos.Y])
+        {
+            case EMapState.Wall:
+                return false;
+            case EMapState.Box:
+            {
+                if (CanMoveInto(newPos, delta))
+                {
+                    Point nextPos = new Point(newPos.X + delta.X, newPos.Y + delta.Y);
+                    map[nextPos.X, nextPos.Y] = EMapState.Box;
+                    map[newPos.X, newPos.Y] = EMapState.Empty;
+                    return true;
+                }
+                return false;
+            }
+            case EMapState.BoxLeft:
+            case EMapState.BoxRight:
+                //TODO
+                return false;
+            case EMapState.Robot:
+                return true;
+            case EMapState.Empty:
+                return true;
+        }
+
+        return false;
+    }
+
+    public override async ValueTask<int> Solve_1()
+    {
+         bool isMapParse = true;
         int yCur = 0;
         foreach (string line in InputLines)
         {
@@ -102,43 +146,7 @@ public class Day15 : BaseDay
                 }    
             }
         }
-        
-    }
 
-    private bool CanMoveInto(Point objectPos, Point delta)
-    {
-        Point newPos = new Point(objectPos.X + delta.X, objectPos.Y + delta.Y);
-        if ((newPos.X < 0) || (newPos.Y < 0) || (newPos.X >= xMax) || (newPos.Y >= yMax))
-        {
-            return false;
-        }
-
-        switch(map[newPos.X, newPos.Y])
-        {
-            case EMapState.Wall:
-                return false;
-            case EMapState.Box:
-            {
-                if (CanMoveInto(newPos, delta))
-                {
-                    Point nextPos = new Point(newPos.X + delta.X, newPos.Y + delta.Y);
-                    map[nextPos.X, nextPos.Y] = EMapState.Box;
-                    map[newPos.X, newPos.Y] = EMapState.Empty;
-                    return true;
-                }
-                return false;
-            }
-            case EMapState.Robot:
-                return true;
-            case EMapState.Empty:
-                return true;
-        }
-
-        return false;
-    }
-
-    public override async ValueTask<int> Solve_1()
-    {
         int part1 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
@@ -189,6 +197,7 @@ public class Day15 : BaseDay
             
         });
         
+        //1430439 
         return part1;
     }
 
