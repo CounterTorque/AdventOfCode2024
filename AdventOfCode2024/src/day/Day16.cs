@@ -60,6 +60,11 @@ class AStar
         yMax = map.GetLength(1);
     }
 
+    public List<List<Tile>> FindAllBestPaths()
+    {
+        return null;
+    }
+
     public List<Tile> FindPath()
     {
         // initialize start tile
@@ -304,7 +309,6 @@ public class Day16 : BaseDay
     public override async ValueTask<int> Solve_1()
     {
         int part1 = 0;
-        Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
             AStar aStar = new AStar(map, map[PlayerPos.X, PlayerPos.Y], map[EndPos.X, EndPos.Y], PlayerDir);
             List<Tile> path = aStar.FindPath();
@@ -313,7 +317,6 @@ public class Day16 : BaseDay
             part1 = pathCost;
         });
         
-        //101496 TO HIGH
         return part1;
     }
 
@@ -323,9 +326,14 @@ public class Day16 : BaseDay
         int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
-
+            AStar aStar = new AStar(map, map[PlayerPos.X, PlayerPos.Y], map[EndPos.X, EndPos.Y], PlayerDir);
+            List<List<Tile>> paths = aStar.FindAllBestPaths();
+            //aStar.PrintMap(path);
+            
+            part2 = paths.Count;
         });
 
+        //493 TO LOW
         return part2;
     }
 
