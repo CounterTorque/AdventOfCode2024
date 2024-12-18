@@ -8,7 +8,7 @@ public class Day18 : BaseDay
 {
     class AStar
     {
-       public enum TileType
+        public enum TileType
         {
             Empty,
             Start,
@@ -35,7 +35,7 @@ public class Day18 : BaseDay
             public Tile Parent { get; set; }
 
         }
-        
+
         private List<Tile> _openList;
         private List<Tile> _closedList;
         private Tile[,] _map;
@@ -196,12 +196,12 @@ public class Day18 : BaseDay
         }
     }
 
-    const int xMax = 70+1;
-    const int yMax = 70+1;
-    AStar.Tile[,] map = new AStar.Tile[xMax, yMax]; 
+    const int xMax = 70 + 1;
+    const int yMax = 70 + 1;
+    AStar.Tile[,] map = new AStar.Tile[xMax, yMax];
     Point PlayerPos = new Point(0, 0);
-    Point EndPos = new Point(xMax-1, yMax-1);
-    
+    Point EndPos = new Point(xMax - 1, yMax - 1);
+
     struct BytePos
     {
         public int X;
@@ -220,7 +220,7 @@ public class Day18 : BaseDay
             }
         }
 
-        foreach(string line in InputLines)
+        foreach (string line in InputLines)
         {
             string[] nums = Regex.Split(line, ",");
             Debug.Assert(nums.Length == 2, "Invalid line: " + line);
@@ -236,7 +236,7 @@ public class Day18 : BaseDay
     {
         int part1 = 0;
         int MaxFalling = 1024;
-        
+
         for (int i = 0; i < fallingBytes.Count; i++)
         {
             if (i >= MaxFalling) break;
@@ -246,26 +246,59 @@ public class Day18 : BaseDay
         }
 
 
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
             AStar aStar = new AStar(map, map[PlayerPos.X, PlayerPos.Y], map[EndPos.X, EndPos.Y]);
             List<AStar.Tile> path = aStar.FindPath();
             aStar.PrintMap(path);
             int pathCost = path.Last().G;
             part1 = pathCost;
         });
-        
+
         return part1;
     }
 
 
     public override async ValueTask<int> Solve_2()
     {
-        int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
+            int MaxFalling = 1024;
+            while (MaxFalling < fallingBytes.Count)
+            {
+                Console.WriteLine($"Trying {MaxFalling} falling bytes");
+                for (int y = 0; y < yMax; y++)
+                {
+                    for (int x = 0; x < xMax; x++)
+                    {
+                        map[x, y] = new AStar.Tile(AStar.TileType.Empty, x, y);
+                    }
+                }
+
+                for (int i = 0; i < MaxFalling; i++)
+                {
+                    BytePos bp = fallingBytes[i];
+                    map[bp.X, bp.Y].Type = AStar.TileType.Wall;
+                }
+
+                AStar aStar = new AStar(map, map[PlayerPos.X, PlayerPos.Y], map[EndPos.X, EndPos.Y]);
+                List<AStar.Tile> path = aStar.FindPath();
+                if (path == null)
+                {
+                    break;
+                }
+
+
+                MaxFalling++;
+            }
+
+            BytePos lastChanceByte = fallingBytes[MaxFalling-1];           
+            Console.WriteLine($"Last chance byte: {lastChanceByte.X}, {lastChanceByte.Y} @ {MaxFalling-1}");
+            
 
         });
 
-        return part2;
+        return 0;
     }
 }
