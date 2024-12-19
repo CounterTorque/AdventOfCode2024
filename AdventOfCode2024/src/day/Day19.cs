@@ -37,9 +37,11 @@ public class Day19 : BaseDay
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() =>
         {
+            int i = 0;
 
             foreach (string design in TowelDesigns)
             {
+                Console.WriteLine($"{i++} / {TowelDesigns.Count}");
                 bool isDesignAble = CheckDesign(design);
                 if (isDesignAble)
                 {
@@ -54,32 +56,38 @@ public class Day19 : BaseDay
 
     private bool CheckDesign(string design)
     {
-        var designQueue = new Queue<string>();
-        designQueue.Enqueue(design);
+        var queue = new Queue<int>();
+        var visited = new HashSet<int>();
 
-        while (designQueue.Count > 0)
+        queue.Enqueue(0);
+        visited.Add(0);
+
+        while (queue.Count > 0)
         {
-            var currentPattern = designQueue.Dequeue();
+            int startIndex = queue.Dequeue();
 
             foreach (var pattern in TowelPatterns)
             {
-                if (currentPattern.StartsWith(pattern))
+                if (design.AsSpan(startIndex).StartsWith(pattern))
                 {
-                    var subPattern = currentPattern.Substring(pattern.Length);
+                    int nextIndex = startIndex + pattern.Length;
 
-                    if (string.IsNullOrEmpty(subPattern))
+                    if (nextIndex == design.Length)
                     {
-                        return true;
+                        return true; 
                     }
 
-                    designQueue.Enqueue(subPattern);
+                    if (!visited.Contains(nextIndex))
+                    {
+                        queue.Enqueue(nextIndex);
+                        visited.Add(nextIndex);
+                    }
                 }
             }
         }
 
         return false;
     }
-
 
     public override async ValueTask<int> Solve_2()
     {
