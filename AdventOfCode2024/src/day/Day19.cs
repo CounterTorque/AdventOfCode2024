@@ -74,7 +74,7 @@ public class Day19 : BaseDay
 
                     if (nextIndex == design.Length)
                     {
-                        return true; 
+                        return true;
                     }
 
                     if (!visited.Contains(nextIndex))
@@ -89,15 +89,61 @@ public class Day19 : BaseDay
         return false;
     }
 
+    private long CountValidPatterns(string design)
+    {
+        var queue = new Queue<int>();
+        var patternCounts = new Dictionary<int, long>();
+
+        queue.Enqueue(0);
+        patternCounts[0] = 1; // Start with one way to begin at index 0
+
+        while (queue.Count > 0)
+        {
+            int startIndex = queue.Dequeue();
+
+            foreach (var pattern in TowelPatterns)
+            {
+                if (design.AsSpan(startIndex).StartsWith(pattern))
+                {
+                    int nextIndex = startIndex + pattern.Length;
+
+                    if (!patternCounts.ContainsKey(nextIndex))
+                    {
+                        queue.Enqueue(nextIndex);
+                        patternCounts[nextIndex] = 0;
+                    }
+
+                    // Accumulate the number of ways to reach `nextIndex`
+                    patternCounts[nextIndex] += patternCounts[startIndex];
+                }
+            }
+        }
+
+        // Return the count of ways to reach the end of the string
+        return patternCounts.ContainsKey(design.Length) ? patternCounts[design.Length] : 0;
+    }
+
+
     public override async ValueTask<int> Solve_2()
     {
-        int part2 = 0;
+        long part2 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() =>
         {
+            int i = 0;
 
+            foreach (string design in TowelDesigns)
+            {
+                long cDesigns = CountValidPatterns(design);
+                Console.WriteLine($"{i++} / {TowelDesigns.Count} : {cDesigns}");
+                part2 += cDesigns;
+            }
         });
 
-        return part2;
+        Console.WriteLine($"Part 2: {part2}");
+
+        
+        //25629551013286 TO LOW
+        return 0;
     }
 }
