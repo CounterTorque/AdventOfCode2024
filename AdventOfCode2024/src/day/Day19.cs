@@ -89,10 +89,10 @@ public class Day19 : BaseDay
         return false;
     }
 
-    private long CountValidPatterns(string design)
+    private ulong CountValidPatterns(string design)
     {
-        var queue = new Queue<int>();
-        var patternCounts = new Dictionary<int, long>();
+        Queue<int> queue = new Queue<int>();
+        Dictionary<int, ulong> patternCounts = new Dictionary<int, ulong>();
 
         queue.Enqueue(0);
         patternCounts[0] = 1; // Start with one way to begin at index 0
@@ -101,7 +101,7 @@ public class Day19 : BaseDay
         {
             int startIndex = queue.Dequeue();
 
-            foreach (var pattern in TowelPatterns)
+            foreach (string pattern in TowelPatterns)
             {
                 if (design.AsSpan(startIndex).StartsWith(pattern))
                 {
@@ -126,15 +126,15 @@ public class Day19 : BaseDay
 
     public override async ValueTask<int> Solve_2()
     {
-        long part2 = 0;
+        ulong part2 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() =>
         {
-            int i = 0;
+            int i = 1;
 
             foreach (string design in TowelDesigns)
             {
-                long cDesigns = CountValidPatterns(design);
+                ulong cDesigns = CountValidPatterns(design);
                 Console.WriteLine($"{i++} / {TowelDesigns.Count} : {cDesigns}");
                 part2 += cDesigns;
             }
@@ -142,7 +142,7 @@ public class Day19 : BaseDay
 
         Console.WriteLine($"Part 2: {part2}");
 
-        
+        //624802218898092 Someones Python gave this
         //25629551013286 TO LOW
         return 0;
     }
