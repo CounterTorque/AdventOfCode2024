@@ -136,6 +136,36 @@ public class Day21 : BaseDay
                                                                                       {'9', "" }}}},
     };
 
+    private Dictionary<char, KeyButton> DirButtons = new Dictionary<char, KeyButton>
+    {
+        {'A', new KeyButton { Key = 'A', PathToButton = new Dictionary<char, string> {  {'A', "" },
+                                                                                      {'^', "<" },
+                                                                                      {'>', "v" },
+                                                                                      {'v', "<v" },
+                                                                                      {'<', "v<<" }}}},
+        {'^', new KeyButton { Key = '^', PathToButton = new Dictionary<char, string> {  {'A', ">" },
+                                                                                      {'^', "" },
+                                                                                      {'>', ">v" },
+                                                                                      {'v', "v" },
+                                                                                      {'<', "v<" }}}},
+        {'>', new KeyButton { Key = '>', PathToButton = new Dictionary<char, string> {  {'A', "^" },
+                                                                                      {'^', "^<" },
+                                                                                      {'>', "" },
+                                                                                      {'v', "<" },
+                                                                                      {'<', "<<" }}}},
+        {'v', new KeyButton { Key = 'v', PathToButton = new Dictionary<char, string> {  {'A', "^>" },
+                                                                                      {'^', "^" },
+                                                                                      {'>', ">" },
+                                                                                      {'v', "" },
+                                                                                      {'<', "<" }}}},
+        {'<', new KeyButton { Key = '<', PathToButton = new Dictionary<char, string> {  {'A', ">>^" },
+                                                                                      {'^', ">^" },
+                                                                                      {'>', ">>" },
+                                                                                      {'v', ">" },
+                                                                                      {'<', "" }}}},
+    };
+
+
     public Day21(string[]? inputLines = null) : base(inputLines)
     {
     }
