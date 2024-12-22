@@ -5,9 +5,16 @@ using AdventOfCode2024;
 
 public class Day22 : BaseDay
 {
+    struct BananaPrice
+    {
+        public int Price;
+        public int Delta;
+    }
 
     List<int> InitialSecretNumbers = new List<int>();
     List<int> FinalSecretNumbers = new List<int>();
+
+    List<List<BananaPrice>> BuyersPrices = new List<List<BananaPrice>>();
 
     public Day22(string[]? inputLines = null) : base(inputLines)
     {
@@ -39,6 +46,8 @@ public class Day22 : BaseDay
 
     private int CalculateSecretTo(int curSecret, int generations)
     {
+        List<BananaPrice> prices = new List<BananaPrice>();
+        int lastPrice = 0;
         for (int i = 0; i < generations; i++)
         {
             //Step 1
@@ -64,7 +73,16 @@ public class Day22 : BaseDay
             valMul = curSecret << 11;
             valMix = valMul ^ curSecret;
             curSecret = valMix & 16777215;
+
+            //Storage for Part 2
+            BananaPrice price = new BananaPrice();
+            price.Price = curSecret % 10;
+            price.Delta = price.Price - lastPrice;
+            lastPrice = price.Price;
+            prices.Add(price);
         }
+
+        BuyersPrices.Add(prices);
         
         return curSecret;
     }
@@ -75,8 +93,92 @@ public class Day22 : BaseDay
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
 
+            //Step 1
+            foreach(int num in InitialSecretNumbers)
+            {
+                int finalSecret = CalculateSecretTo(num, 2000);
+                FinalSecretNumbers.Add(finalSecret);
+            }
+
+            //Step 2            
+            long curBest = 0;
+            //foreach(List<BananaPrice> prices in BuyersPrices)
+            for (int p = 0; p < BuyersPrices.Count; p++)
+            {
+                Console.WriteLine($"Buyer {p}");
+                List<BananaPrice> prices = BuyersPrices[p];
+                for(int i = 1; i < prices.Count - 3; i++)
+                {
+                    BananaPrice first = prices[i];
+                    BananaPrice second = prices[i + 1];
+                    BananaPrice third = prices[i + 2];
+                    BananaPrice fourth = prices[i + 3];
+                  
+                    long bananaCount = CalculatePrice(first.Delta, second.Delta, third.Delta, fourth.Delta);
+
+                    if (bananaCount > curBest)
+                    {
+                        curBest = bananaCount;
+                    }
+                }
+            }
+
+            Console.WriteLine($"Part 2: {curBest}");
         });
 
-        return part2;
+        
+        return 0;
+    }
+
+    private Dictionary<(int, int, int, int), long> _bananaPrices = new Dictionary<(int, int, int, int), long>();
+    private long CalculatePrice(int delta1, int delta2, int delta3, int delta4)
+    {
+        var key = (delta1, delta2, delta3, delta4);
+        if (_bananaPrices.ContainsKey(key))
+        {
+            return _bananaPrices[key];
+        }
+
+        long bananaCount = 0;
+        foreach (List<BananaPrice> prices in BuyersPrices)
+        {
+            long bestPrice = 0;
+            for (int i = 0; i < prices.Count - 3; i++)
+            {
+                BananaPrice first = prices[i];
+                if (first.Delta != delta1)
+                {
+                    continue;
+                }
+                BananaPrice second = prices[i + 1];
+                if (second.Delta != delta2)
+                {
+                    continue;
+                }
+                BananaPrice third = prices[i + 2];
+                if (third.Delta != delta3)
+                {
+                    continue;
+                }
+                BananaPrice fourth = prices[i + 3];
+                if (fourth.Delta != delta4)
+                {
+                    continue;
+                }
+                
+                if (fourth.Price > bestPrice)
+                {
+                    bestPrice = fourth.Price;
+                }
+                
+            }
+
+            bananaCount += bestPrice;
+        }
+
+        _bananaPrices[key] = bananaCount;
+
+        return bananaCount;
+
     }
 }
