@@ -101,7 +101,7 @@ public class Day22 : BaseDay
             }
 
             //Step 2            
-            long curBest = 0;
+            int curBest = 0;
             //foreach(List<BananaPrice> prices in BuyersPrices)
             for (int p = 0; p < BuyersPrices.Count; p++)
             {
@@ -114,7 +114,7 @@ public class Day22 : BaseDay
                     BananaPrice third = prices[i + 2];
                     BananaPrice fourth = prices[i + 3];
                   
-                    long bananaCount = CalculatePrice(first.Delta, second.Delta, third.Delta, fourth.Delta);
+                    int bananaCount = CalculatePrice(first.Delta, second.Delta, third.Delta, fourth.Delta);
 
                     if (bananaCount > curBest)
                     {
@@ -130,8 +130,8 @@ public class Day22 : BaseDay
         return 0;
     }
 
-    private Dictionary<(int, int, int, int), long> _bananaPrices = new Dictionary<(int, int, int, int), long>();
-    private long CalculatePrice(int delta1, int delta2, int delta3, int delta4)
+    private Dictionary<(int, int, int, int), int> _bananaPrices = new Dictionary<(int, int, int, int), int>();
+    private int CalculatePrice(int delta1, int delta2, int delta3, int delta4)
     {
         var key = (delta1, delta2, delta3, delta4);
         if (_bananaPrices.ContainsKey(key))
@@ -139,38 +139,35 @@ public class Day22 : BaseDay
             return _bananaPrices[key];
         }
 
-        long bananaCount = 0;
-        foreach (List<BananaPrice> prices in BuyersPrices)
+        int bananaCount = 0;
+        foreach (List<BananaPrice> BuyerList in BuyersPrices)
         {
-            long bestPrice = 0;
-            for (int i = 0; i < prices.Count - 3; i++)
+            int bestPrice = 0;
+            for (int i = 1; i < BuyerList.Count - 3; i++)
             {
-                BananaPrice first = prices[i];
+                BananaPrice first = BuyerList[i];
                 if (first.Delta != delta1)
                 {
                     continue;
                 }
-                BananaPrice second = prices[i + 1];
+                BananaPrice second = BuyerList[i + 1];
                 if (second.Delta != delta2)
                 {
                     continue;
                 }
-                BananaPrice third = prices[i + 2];
+                BananaPrice third = BuyerList[i + 2];
                 if (third.Delta != delta3)
                 {
                     continue;
                 }
-                BananaPrice fourth = prices[i + 3];
+                BananaPrice fourth = BuyerList[i + 3];
                 if (fourth.Delta != delta4)
                 {
                     continue;
                 }
                 
-                if (fourth.Price > bestPrice)
-                {
-                    bestPrice = fourth.Price;
-                }
-                
+                bestPrice = fourth.Price;
+                break; //Stop the first time you hear it per buyer                
             }
 
             bananaCount += bestPrice;
