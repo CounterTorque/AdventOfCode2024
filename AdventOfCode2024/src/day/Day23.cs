@@ -87,25 +87,93 @@ public class Day23 : BaseDay
         int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
 
-        var graph = new AdjacencyGraph<string, Edge<string>>();
-        graph.AddVertexRange(ComputerConnections.Keys);
-        graph.AddEdgeRange(ComputerConnections.SelectMany(x => x.Value.Select(y => new Edge<string>(x.Key, y))));
+        var adjgraph = new AdjacencyGraph<string, Edge<string>>();
+        adjgraph.AddVertexRange(ComputerConnections.Keys);
+        adjgraph.AddEdgeRange(ComputerConnections.SelectMany(x => x.Value.Select(y => new Edge<string>(x.Key, y))));
+
+
+        var graph = new UndirectedGraph<string, UndirectedEdge<string>>();
+        graph.AddVertexRange(adjgraph.Vertices);
+        var seenEdges = new HashSet<UndirectedEdge<string>>();
+        foreach (var edge in adjgraph.Edges)
+        {
+            // Sort vertices to ensure consistent undirected edge representation
+            var source = string.Compare(edge.Source, edge.Target, StringComparison.Ordinal) <= 0
+                ? edge.Source
+                : edge.Target;
+
+            var target = string.Compare(edge.Source, edge.Target, StringComparison.Ordinal) <= 0
+                ? edge.Target
+                : edge.Source;
+
+            var undirectedEdge = new UndirectedEdge<string>(source, target);
+
+            if (seenEdges.Add(undirectedEdge)) // Add only if it’s not a duplicate
+            {
+                graph.AddEdge(undirectedEdge);
+            }
+        }
+        
+        
 
         await Task.Run(() =>
         {
-
-            foreach (string vertex in graph.Vertices)
+            var largestClique = new List<string>();
+            BronKerbosch(new List<string>(), new HashSet<string>(graph.Vertices), new HashSet<string>(), graph, ref largestClique);
+        
+            largestClique.Sort();
+            foreach(string vertex in largestClique)
             {
-                foreach (Edge<string> Edge in graph.OutEdges(vertex))
-                {
-                    Console.WriteLine(Edge);
-                }
-                Console.WriteLine();
+                Console.Write($"{vertex},");
             }
+            Console.WriteLine();
             
 
         });
 
         return part2;
+    }
+
+    static void BronKerbosch(List<string> R, 
+                            HashSet<string> P,
+                            HashSet<string> X,
+                            UndirectedGraph<string, UndirectedEdge<string>> graph,
+                             ref List<string> largestClique)
+    {
+        if (P.Count == 0 && X.Count == 0)
+        {
+            // Found a maximal clique
+            if (R.Count > largestClique.Count)
+            {
+                largestClique = new List<string>(R);
+            }
+            return;
+        }
+
+        var pivot = ChoosePivot(P, X, graph);
+        var neighborsOfPivot = new HashSet<string>(graph.AdjacentVertices(pivot));
+
+        foreach (var v in new HashSet<string>(P.Except(neighborsOfPivot)))
+        {
+            R.Add(v);
+            BronKerbosch(R, new HashSet<string>(P.Intersect(graph.AdjacentVertices(v))),
+                         new HashSet<string>(X.Intersect(graph.AdjacentVertices(v))),
+                         graph, ref largestClique);
+            R.Remove(v);
+            P.Remove(v);
+            X.Add(v);
+        }
+    }
+
+    static string ChoosePivot(HashSet<string> P, HashSet<string> X, UndirectedGraph<string, UndirectedEdge<string>> graph)
+    {
+        // Simplistic pivot choice: return the first vertex from P ∪ X
+        foreach (var vertex in P)
+            return vertex;
+
+        foreach (var vertex in X)
+            return vertex;
+
+        throw new InvalidOperationException("Pivot selection failed.");
     }
 }
