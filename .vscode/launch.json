@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/AdventOfCode2024/bin/Debug/net9.0/AdventOfCode2024.dll",
+            "program": "${workspaceFolder}/AdventOfCode2024/bin/Debug/net9.0-windows/AdventOfCode2024.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

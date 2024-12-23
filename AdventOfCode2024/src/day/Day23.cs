@@ -8,7 +8,7 @@ public class Day23 : BaseDay
 {
 
     Dictionary<string, List<string>> ComputerConnections = new Dictionary<string, List<string>>();
-    
+
     public Day23(string[]? inputLines = null) : base(inputLines)
     {
         foreach (string line in InputLines)
@@ -28,7 +28,7 @@ public class Day23 : BaseDay
             }
 
             ComputerConnections[pcNames[1]].Add(pcNames[0]);
-            
+
         }
     }
 
@@ -36,17 +36,18 @@ public class Day23 : BaseDay
     {
         int part1 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+        await Task.Run(() =>
+        {
             var graph = new AdjacencyGraph<string, Edge<string>>();
             graph.AddVertexRange(ComputerConnections.Keys);
             graph.AddEdgeRange(ComputerConnections.SelectMany(x => x.Value.Select(y => new Edge<string>(x.Key, y))));
-            
+
 
             HashSet<(string, string, string)> triangles = new HashSet<(string, string, string)>();
 
             foreach (string vertex in graph.Vertices)
             {
-                
+
                 var outEdges = graph.OutEdges(vertex).ToList();
                 for (int i = 0; i < outEdges.Count; i++)
                 {
@@ -62,12 +63,12 @@ public class Day23 : BaseDay
                             triVerts.Sort();
                             triangles.Add((triVerts[0], triVerts[1], triVerts[2]));
                         }
-                      
+
                     }
                 }
             }
 
-            foreach( (string v1, string v2, string v3) in triangles)
+            foreach ((string v1, string v2, string v3) in triangles)
             {
                 if (v1.StartsWith('t') || v2.StartsWith('t') || v3.StartsWith('t'))
                 {
@@ -76,7 +77,7 @@ public class Day23 : BaseDay
             }
 
         });
-        
+
         return part1;
     }
 
@@ -85,7 +86,23 @@ public class Day23 : BaseDay
     {
         int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
-        await Task.Run(() => {
+
+        var graph = new AdjacencyGraph<string, Edge<string>>();
+        graph.AddVertexRange(ComputerConnections.Keys);
+        graph.AddEdgeRange(ComputerConnections.SelectMany(x => x.Value.Select(y => new Edge<string>(x.Key, y))));
+
+        await Task.Run(() =>
+        {
+
+            foreach (string vertex in graph.Vertices)
+            {
+                foreach (Edge<string> Edge in graph.OutEdges(vertex))
+                {
+                    Console.WriteLine(Edge);
+                }
+                Console.WriteLine();
+            }
+            
 
         });
 
