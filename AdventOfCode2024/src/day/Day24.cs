@@ -117,7 +117,19 @@ public class Day24 : BaseDay
         int part2 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
-
+            //Collect all x, y, and z wires into their own lists (the x and y are always defined by the input)
+            //setting all values to 0
+            //Walk through each pair of X and Y and Set them to 1, then check the Z.
+            //If the Z is 0, then find what wire is set to 1 (if any....)
+            //If you find one that's 1, then this is one to swap likely. 
+            // SUB NOTE: This seems too easy. There are likely situations where there is a 0 because of the other logic involed.
+            //           If so, you'd have to dig deeper into the logic to find what does become a 1. And you might not simply swap z's out. 
+            //           And making a swap might destroy an already correct wiring.
+            //Once you find a 1, then set it to 0 and try again.
+            //Swap the outputs, (Mark them as already swapped) and try again.
+            //Do this until all bits correctly are set from their x AND y = z
+            //Should be 8 total (4 swaps)
+            //Sort those names alphabetically, and return comma separated list
         });
 
         return part2;
