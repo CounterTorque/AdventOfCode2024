@@ -55,13 +55,60 @@ public class Day24 : BaseDay
 
     public override async ValueTask<int> Solve_1()
     {
-        int part1 = 0;
+        ulong part1 = 0;
         Debug.Assert(InputLines.Length != 0);
+        LinkedList<WireLogic> RemainingLogic = new LinkedList<WireLogic>(WireLogicSets.Select(x => x));
+        
         await Task.Run(() => {
+
+            int nextIndex = 0;
+            while (RemainingLogic.Count > 0)
+            {
+                WireLogic current = RemainingLogic.ElementAt(nextIndex);
+                //Check that both the inputs are already set in the dictionary
+                if (WireStates.ContainsKey(current.Input1) && WireStates.ContainsKey(current.Input2))
+                {
+                    bool input1 = WireStates[current.Input1];
+                    bool input2 = WireStates[current.Input2];
+                    bool result = false;
+                    switch (current.Gate)
+                    {
+                        case LogicGate.AND:
+                            result = input1 && input2;
+                            break;
+                        case LogicGate.OR:
+                            result = input1 || input2;
+                            break;
+                        case LogicGate.XOR:
+                            result = input1 ^ input2;
+                            break;
+                    }
+                    WireStates[current.Output] = result;
+                    RemainingLogic.Remove(current);
+                    nextIndex = 0;
+                    continue;
+                }
+
+                nextIndex = (nextIndex + 1) % WireLogicSets.Count;                
+            }
+
+            //Now we need to pull out all the dictionary values that start with z
+            //Then sort them
+            List<string> zKeys = WireStates.Keys.Where(x => x.StartsWith("z")).ToList();
+            zKeys.Sort();
+
+            int shift = 0;
+            foreach (string key in zKeys)
+            {
+                ulong keyBit = WireStates[key] ? (ulong)1 : (ulong)0;
+                part1 = part1 | (keyBit << shift);
+                shift += 1;
+            }
 
         });
         
-        return part1;
+        Console.WriteLine($"Part 1: {part1}");
+        return 0;
     }
 
 
