@@ -73,7 +73,7 @@ public class Day25 : BaseDay
                     bool isMatch = true;
                     for (int i = 0; i < 5; i++)
                     {
-                        if (keyLayout.Heights[i] + lockLayout.Heights[i] > MaxHeight)
+                        if (keyLayout.Heights[i] + lockLayout.Heights[i] >= MaxHeight)
                         {
                             isMatch = false;
                             break;
@@ -92,9 +92,6 @@ public class Day25 : BaseDay
             
         });
         
-        //1250 TO LOW
-        //62500 TO HIGH
-        //312500 TO HIGH
         return part1;
     }
 
