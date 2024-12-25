@@ -31,12 +31,13 @@ public class Day25 : BaseDay
         
             ChannelHeight heightParse = new ChannelHeight();
             i++;
-            for (int j = i; j < MaxHeight; j++)
+            for (int j = 0; j < MaxHeight-1; j++)
             {
-                line = InputLines[j];
+                line = InputLines[j+i];
                 for (int k = 0; k < line.Length; k++)
                 {
-                    heightParse.Heights[k] += line[k] == '#' ? 1 : 0;
+                    char c = line[k];
+                    heightParse.Heights[k] += c == '#' ? 1 : 0;
                 }
             }
             i += MaxHeight;
@@ -58,9 +59,42 @@ public class Day25 : BaseDay
         int part1 = 0;
         Debug.Assert(InputLines.Length != 0);
         await Task.Run(() => {
+            //I think we can convert these to bits. Then if we AND them together, they should equal all 1's or something.....
+            //Run Brute force for now.
 
+            for (int l = 0; l < LockLayouts.Count; l++)
+            {
+                ChannelHeight lockLayout = LockLayouts[l];
+
+                for (int k = 0; k < KeyLayouts.Count; k++)    
+                {
+                    ChannelHeight keyLayout = KeyLayouts[k];                
+             
+                    bool isMatch = true;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (keyLayout.Heights[i] + lockLayout.Heights[i] > MaxHeight)
+                        {
+                            isMatch = false;
+                            break;
+                        }
+                    }
+
+                    if (isMatch)
+                    {
+                        part1 += 1;
+                        //break;
+                    }
+                }
+            }
+
+
+            
         });
         
+        //1250 TO LOW
+        //62500 TO HIGH
+        //312500 TO HIGH
         return part1;
     }
 
